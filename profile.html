@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - 智价宝</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="profile" class="skeleton-active">
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="transition-mask" aria-hidden="true"></div>
+  <div class="skeleton-screen" id="skeletonScreen" aria-hidden="true">
+    <div class="skeleton-stage">
+      <div class="skeleton-nav">
+        <div class="skeleton-brand">
+          <div class="skeleton-logo"></div>
+          <div class="skeleton-lines" style="gap:8px;">
+            <div class="skel text short" style="width:110px;height:18px;"></div>
+            <div class="skel text short" style="width:150px;height:12px;"></div>
+          </div>
+        </div>
+        <div class="skeleton-menu">
+          <div class="skel button" style="width:58px;height:34px;"></div>
+          <div class="skel button" style="width:92px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+        </div>
+      </div>
+      <div class="skeleton-hero">
+        <div class="skeleton-lines">
+          <div class="skel kicker"></div>
+          <div class="skel title"></div>
+          <div class="skel title short"></div>
+          <div class="skel text"></div>
+          <div class="skel text medium"></div>
+          <div class="skeleton-actions">
+            <div class="skel button"></div>
+            <div class="skel button"></div>
+          </div>
+        </div>
+        <div class="skeleton-phone"></div>
+      </div>
+      <div class="skeleton-card-row">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" data-transition>
+      <span class="brand-mark">智</span>
+      <span>
+        <span class="brand-title">智价宝</span>
+        <span class="brand-sub">用户文旅数据档案</span>
+      </span>
+    </a>
+    <nav class="main-nav" aria-label="主导航">
+      <a class="nav-link " href="index.html" data-transition><span>首页</span></a>
+      <a class="nav-link " href="estimate.html" data-transition><span>AI智能估价</span></a>
+      <a class="nav-link " href="compare.html" data-transition><span>全网比价</span></a>
+      <a class="nav-link " href="market.html" data-transition><span>二手集市</span></a>
+      <a class="nav-link active" href="profile.html" data-transition><span>个人中心</span></a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换深色国风主题" aria-pressed="false" title="切换主题">
+      <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+    </button>
+  </header>
+
+  <div class="page-shell">
+    <main class="page-main">
+      <section class="wide-content page-hero reveal">
+        <p class="section-kicker">Profile Center</p>
+        <h1 class="shine-text">估价、发布、交易记录一处管理</h1>
+        <p class="muted">个人中心用于路演模拟登录、估价记录、发布记录和文旅消费偏好档案，不保存真实用户数据。</p>
+      </section>
+
+      <section class="wide-content profile-layout">
+        <aside>
+          <form class="panel login-card reveal" id="loginCard" onsubmit="return false;">
+            <p class="section-kicker">Mock Login</p>
+            <h2>模拟登录</h2>
+            <div class="form-row">
+              <label for="phone">手机号</label>
+              <input class="field" id="phone" value="188****2026">
+            </div>
+            <div class="form-row" style="margin-top: 14px;">
+              <label for="code">验证码</label>
+              <input class="field" id="code" value="0626">
+            </div>
+            <button class="btn" id="loginBtn" type="button" style="margin-top: 18px;">
+              <span class="login-spinner"></span>
+              <span>登录演示账号</span>
+            </button>
+            <p class="muted" id="loginStatus" style="margin-top: 14px;">当前为未登录演示状态</p>
+          </form>
+
+          <section class="panel profile-card reveal">
+            <div class="profile-head">
+              <div class="big-avatar">陈</div>
+              <div>
+                <h3>陈海林</h3>
+                <p class="muted">智价宝项目队长 · 大数据技术</p>
+              </div>
+            </div>
+            <div class="tag-row" style="margin-top: 18px;">
+              <span class="tag">估价 12 次</span>
+              <span class="tag">发布 5 件</span>
+              <span class="tag">信用良好</span>
+            </div>
+          </section>
+        </aside>
+
+        <section class="records-grid">
+          <div class="panel login-card reveal">
+            <div class="section-title">
+              <div>
+                <p class="section-kicker">Valuation Records</p>
+                <h2>估价记录</h2>
+              </div>
+            </div>
+            <div class="record-list" id="estimateRecords"></div>
+          </div>
+
+          <div class="panel login-card reveal">
+            <div class="section-title">
+              <div>
+                <p class="section-kicker">Post Records</p>
+                <h2>发布记录</h2>
+              </div>
+            </div>
+            <div class="record-list" id="postRecords"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>

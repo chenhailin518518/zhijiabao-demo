@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二手交易集市 - 智价宝</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="market" class="skeleton-active">
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="transition-mask" aria-hidden="true"></div>
+  <div class="skeleton-screen" id="skeletonScreen" aria-hidden="true">
+    <div class="skeleton-stage">
+      <div class="skeleton-nav">
+        <div class="skeleton-brand">
+          <div class="skeleton-logo"></div>
+          <div class="skeleton-lines" style="gap:8px;">
+            <div class="skel text short" style="width:110px;height:18px;"></div>
+            <div class="skel text short" style="width:150px;height:12px;"></div>
+          </div>
+        </div>
+        <div class="skeleton-menu">
+          <div class="skel button" style="width:58px;height:34px;"></div>
+          <div class="skel button" style="width:92px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+        </div>
+      </div>
+      <div class="skeleton-hero">
+        <div class="skeleton-lines">
+          <div class="skel kicker"></div>
+          <div class="skel title"></div>
+          <div class="skel title short"></div>
+          <div class="skel text"></div>
+          <div class="skel text medium"></div>
+          <div class="skeleton-actions">
+            <div class="skel button"></div>
+            <div class="skel button"></div>
+          </div>
+        </div>
+        <div class="skeleton-phone"></div>
+      </div>
+      <div class="skeleton-card-row">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" data-transition>
+      <span class="brand-mark">智</span>
+      <span>
+        <span class="brand-title">智价宝</span>
+        <span class="brand-sub">文旅闲置交易集市</span>
+      </span>
+    </a>
+    <nav class="main-nav" aria-label="主导航">
+      <a class="nav-link " href="index.html" data-transition><span>首页</span></a>
+      <a class="nav-link " href="estimate.html" data-transition><span>AI智能估价</span></a>
+      <a class="nav-link " href="compare.html" data-transition><span>全网比价</span></a>
+      <a class="nav-link active" href="market.html" data-transition><span>二手集市</span></a>
+      <a class="nav-link " href="profile.html" data-transition><span>个人中心</span></a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换深色国风主题" aria-pressed="false" title="切换主题">
+      <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+    </button>
+  </header>
+
+  <div class="page-shell">
+    <main class="page-main">
+      <section class="wide-content page-hero reveal">
+        <p class="section-kicker">Second-hand Market</p>
+        <h1 class="shine-text">个人闲置与商户尾货，一屏流转</h1>
+        <p class="muted">模拟展示景区文创二手交易集市：个人闲置、商户清仓、品相说明、担保交易与详情弹窗。</p>
+      </section>
+
+      <section class="wide-content">
+        <div class="toolbar reveal">
+          <div class="tag-filter">
+            <button class="filter-tag active">全部景区</button>
+            <button class="filter-tag">限定款</button>
+            <button class="filter-tag">低价捡漏</button>
+            <button class="filter-tag">可担保</button>
+            <button class="filter-tag">近三日上新</button>
+          </div>
+          <div class="segment" id="marketSegment" data-active="personal">
+            <button class="active" data-mode="personal">个人闲置</button>
+            <button data-mode="merchant">商户尾货</button>
+          </div>
+        </div>
+        <div class="market-grid smooth-list reveal" id="marketList"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop detail-modal" id="detailModal" role="dialog" aria-modal="true" aria-label="商品详情">
+    <section class="modal-card">
+      <div class="modal-head">
+        <div>
+          <p class="section-kicker">Product Detail</p>
+          <h2 id="detailTitle">商品详情</h2>
+        </div>
+        <button class="close-btn" id="closeDetail" aria-label="关闭">×</button>
+      </div>
+      <div class="two-col">
+        <img id="detailImage" src="assets/img/product-fan.png" alt="商品图片" style="border-radius: 20px;">
+        <div>
+          <div class="tag-row" id="detailMeta"></div>
+          <p class="muted" id="detailDesc"></p>
+          <button class="btn" type="button"><span>模拟发起担保交易</span></button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI智能估价 - 智价宝</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="estimate" class="skeleton-active">
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="transition-mask" aria-hidden="true"></div>
+  <div class="skeleton-screen" id="skeletonScreen" aria-hidden="true">
+    <div class="skeleton-stage">
+      <div class="skeleton-nav">
+        <div class="skeleton-brand">
+          <div class="skeleton-logo"></div>
+          <div class="skeleton-lines" style="gap:8px;">
+            <div class="skel text short" style="width:110px;height:18px;"></div>
+            <div class="skel text short" style="width:150px;height:12px;"></div>
+          </div>
+        </div>
+        <div class="skeleton-menu">
+          <div class="skel button" style="width:58px;height:34px;"></div>
+          <div class="skel button" style="width:92px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+          <div class="skel button" style="width:78px;height:34px;"></div>
+        </div>
+      </div>
+      <div class="skeleton-hero">
+        <div class="skeleton-lines">
+          <div class="skel kicker"></div>
+          <div class="skel title"></div>
+          <div class="skel title short"></div>
+          <div class="skel text"></div>
+          <div class="skel text medium"></div>
+          <div class="skeleton-actions">
+            <div class="skel button"></div>
+            <div class="skel button"></div>
+          </div>
+        </div>
+        <div class="skeleton-phone"></div>
+      </div>
+      <div class="skeleton-card-row">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html" data-transition>
+      <span class="brand-mark">智</span>
+      <span>
+        <span class="brand-title">智价宝</span>
+        <span class="brand-sub">AI 文旅估价引擎</span>
+      </span>
+    </a>
+    <nav class="main-nav" aria-label="主导航">
+      <a class="nav-link " href="index.html" data-transition><span>首页</span></a>
+      <a class="nav-link active" href="estimate.html" data-transition><span>AI智能估价</span></a>
+      <a class="nav-link " href="compare.html" data-transition><span>全网比价</span></a>
+      <a class="nav-link " href="market.html" data-transition><span>二手集市</span></a>
+      <a class="nav-link " href="profile.html" data-transition><span>个人中心</span></a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换深色国风主题" aria-pressed="false" title="切换主题">
+      <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+    </button>
+  </header>
+
+  <div class="page-shell">
+    <main class="page-main">
+      <section class="wide-content page-hero reveal">
+        <p class="section-kicker">AI Valuation</p>
+        <h1 class="shine-text">景区文创智能估价</h1>
+        <p class="muted">模拟综合景区来源、产品品相、原价、热度与历史成交区间，生成适合二手流转的建议成交价。</p>
+      </section>
+
+      <section class="wide-content estimator-layout">
+        <div class="panel upload-zone reveal" id="uploadZone">
+          <input id="mockUpload" type="file" accept="image/*" hidden>
+          <img class="upload-preview" id="uploadPreview" alt="上传预览">
+          <div class="upload-content">
+            <div class="upload-icon">图</div>
+            <h2>上传文创图片</h2>
+            <p class="muted">点击选择本地图片，演示系统将模拟识别商品轮廓和文创属性。</p>
+          </div>
+        </div>
+
+        <form class="panel estimator-form reveal" onsubmit="return false;">
+          <div class="form-grid">
+            <div class="form-row">
+              <label for="scenicSelect">景区来源</label>
+              <select class="select" id="scenicSelect">
+                <option>故宫博物院</option>
+                <option>杭州西湖</option>
+                <option>敦煌莫高窟</option>
+                <option>黄山风景区</option>
+                <option>平遥古城</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="originalPrice">购买原价</label>
+              <input class="field" id="originalPrice" type="number" value="168" min="1" placeholder="输入原价">
+            </div>
+            <div class="form-row full">
+              <label>产品品相</label>
+              <div class="condition-group">
+                <label class="condition-option"><input type="radio" name="condition" value="100">全新</label>
+                <label class="condition-option"><input type="radio" name="condition" value="95" checked>95新</label>
+                <label class="condition-option"><input type="radio" name="condition" value="90">9成新</label>
+                <label class="condition-option"><input type="radio" name="condition" value="80">8成新</label>
+              </div>
+            </div>
+            <div class="form-row full">
+              <label for="productNote">补充描述</label>
+              <input class="field" id="productNote" value="限定款、包装完整、轻微使用痕迹" placeholder="如：限定款、包装完整">
+            </div>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn" id="estimateBtn" type="button"><span>启动 AI 估价</span></button>
+          </div>
+          <div class="progress-panel" id="progressPanel">
+            <div class="loader-ring"></div>
+            <p class="muted" style="text-align:center;">正在模拟图像识别、价格样本匹配与品相折旧计算...</p>
+            <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true" aria-label="估价结果">
+    <section class="modal-card">
+      <div class="modal-head">
+        <div>
+          <p class="section-kicker">AI Result</p>
+          <h2>智能估价完成</h2>
+        </div>
+        <button class="close-btn" id="closeResult" aria-label="关闭">×</button>
+      </div>
+      <div class="price-result"><span class="currency">¥</span><span class="number" id="priceNumber">0</span></div>
+      <div class="result-lines" id="resultLines"></div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
