@@ -538,6 +538,24 @@ function initHome() {
   if (hot) {
     hot.innerHTML = DATA.products.slice(0, 4).map((item) => productCard(item, "home")).join("");
   }
+  initDashboardCounters();
+}
+
+function initDashboardCounters() {
+  const counters = $$("[data-count]");
+  if (!counters.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const node = entry.target;
+      const target = Number(node.dataset.count || 0);
+      animateNumber(node, target, 900);
+      observer.unobserve(node);
+    });
+  }, { threshold: 0.6 });
+
+  counters.forEach((node) => observer.observe(node));
 }
 
 /* =========================
@@ -598,13 +616,29 @@ function openEstimateModal(value, original) {
   const modal = $("#resultModal");
   const number = $("#priceNumber");
   const lines = $("#resultLines");
+  const grid = $("#valuationGrid");
   if (!modal || !number || !lines) return;
 
   number.textContent = "0";
+  const condition = $("[name='condition']:checked")?.parentElement?.textContent.trim() || "95新";
+  const scenic = $("#scenicSelect")?.value || "示范景区";
+  const minPrice = Math.max(12, value - 18);
+  const maxPrice = value + 24;
+  const listing = value + 8;
+
+  if (grid) {
+    grid.innerHTML = `
+      <div class="valuation-item"><span>原价折损</span><strong>${Math.round((value / original) * 100)}%</strong></div>
+      <div class="valuation-item"><span>品相系数</span><strong>${condition}</strong></div>
+      <div class="valuation-item"><span>景区热度</span><strong>${scenic.includes("故宫") ? "高热" : "稳中上升"}</strong></div>
+      <div class="valuation-item"><span>成交区间</span><strong>¥${minPrice}-¥${maxPrice}</strong></div>
+    `;
+  }
+
   lines.innerHTML = `
-    <p style="animation-delay: 120ms">官方原价 ¥${original}，结合品相折旧与近期成交热度生成建议价。</p>
-    <p style="animation-delay: 240ms">同景区相似文创近 7 日成交区间集中在 ¥${Math.max(12, value - 18)} - ¥${value + 24}。</p>
-    <p style="animation-delay: 360ms">建议发布价可设置为 ¥${value + 8}，预留小幅议价空间。</p>
+    <p style="animation-delay: 120ms">官方原价 ¥${original}，结合品相折旧、景区热度和同类成交样本生成建议价。</p>
+    <p style="animation-delay: 240ms">同景区相似文创近 7 日成交区间集中在 ¥${minPrice} - ¥${maxPrice}。</p>
+    <p style="animation-delay: 360ms">建议上架价可设置为 ¥${listing}，预留小幅议价空间；急售可下调至 ¥${Math.max(10, value - 10)}。</p>
   `;
   modal.classList.add("is-open");
   interactionSound.play("modal");
@@ -690,14 +724,16 @@ function initMarket() {
   const list = $("#marketList");
   const segment = $("#marketSegment");
   const detail = $("#detailModal");
+  const publishModal = $("#publishModal");
   let mode = "personal";
   let renderCount = 6;
+  const userItems = [];
 
   function visibleData() {
     const base = mode === "personal"
       ? DATA.products.filter((_, index) => index % 2 === 0)
       : DATA.products.filter((_, index) => index % 2 === 1);
-    const looped = [];
+    const looped = mode === "personal" ? [...userItems] : [];
     while (looped.length < renderCount) looped.push(...base);
     return looped.slice(0, renderCount);
   }
@@ -747,6 +783,45 @@ function initMarket() {
   detail?.addEventListener("click", (event) => {
     if (event.target === detail) closeModal(detail);
   });
+
+  $("#openPublish")?.addEventListener("click", () => {
+    publishModal?.classList.add("is-open");
+    interactionSound.play("modal");
+  });
+
+  $("#closePublish")?.addEventListener("click", () => closeModal(publishModal));
+  publishModal?.addEventListener("click", (event) => {
+    if (event.target === publishModal) closeModal(publishModal);
+  });
+
+  $("#submitPublish")?.addEventListener("click", () => {
+    const expected = Number($("#publishPrice")?.value || 49);
+    const original = Number($("#publishOriginal")?.value || 88);
+    const scenic = $("#publishScenic")?.value || "故宫博物院";
+    const item = {
+      id: `user-${Date.now()}`,
+      name: $("#publishName")?.value.trim() || "新发布文旅闲置",
+      scenic,
+      category: scenic.slice(0, 2),
+      image: "assets/img/product-pin.png",
+      condition: "95新",
+      official: original,
+      low: Math.max(9, expected - 12),
+      market: expected,
+      seller: "我",
+      tag: "刚刚发布",
+      desc: $("#publishDesc")?.value.trim() || "包装完整，支持平台担保交易。"
+    };
+    userItems.unshift(item);
+    mode = "personal";
+    segment.dataset.active = "personal";
+    $$("button[data-mode]", segment).forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === "personal"));
+    renderCount = Math.max(renderCount, 6);
+    render(true);
+    closeModal(publishModal);
+    showToast("发布成功：商品已加入个人闲置列表");
+  });
+
   render();
 }
 
@@ -790,6 +865,17 @@ function initDraggableModal(modal) {
     dragging = false;
     card.style.transform = "";
   });
+}
+
+function showToast(message) {
+  const old = $(".publish-toast");
+  old?.remove();
+  const toast = document.createElement("div");
+  toast.className = "publish-toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  interactionSound.play("modal");
+  window.setTimeout(() => toast.remove(), 2500);
 }
 
 /* =========================

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>二手交易集市 - 智价宝</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260617b">
 </head>
 <body data-page="market" class="skeleton-active">
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
@@ -91,6 +91,7 @@
             <button class="active" data-mode="personal">个人闲置</button>
             <button data-mode="merchant">商户尾货</button>
           </div>
+          <button class="btn publish-entry" id="openPublish" type="button"><span>发布闲置</span></button>
         </div>
         <div class="market-grid smooth-list reveal" id="marketList"></div>
       </section>
@@ -116,6 +117,53 @@
       </div>
     </section>
   </div>
-  <script src="script.js"></script>
+
+  <div class="modal-backdrop publish-modal" id="publishModal" role="dialog" aria-modal="true" aria-label="发布闲置商品">
+    <section class="modal-card">
+      <div class="modal-head">
+        <div>
+          <p class="section-kicker">Publish Item</p>
+          <h2>发布文旅闲置</h2>
+        </div>
+        <button class="close-btn" id="closePublish" aria-label="关闭">×</button>
+      </div>
+      <form class="publish-form" onsubmit="return false;">
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="publishName">商品名称</label>
+            <input class="field" id="publishName" value="故宫瑞兽冰箱贴" placeholder="输入商品名称">
+          </div>
+          <div class="form-row">
+            <label for="publishScenic">景区来源</label>
+            <select class="select" id="publishScenic">
+              <option>故宫博物院</option>
+              <option>杭州西湖</option>
+              <option>敦煌莫高窟</option>
+              <option>黄山风景区</option>
+              <option>平遥古城</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="publishOriginal">原价</label>
+            <input class="field" id="publishOriginal" type="number" value="88" min="1">
+          </div>
+          <div class="form-row">
+            <label for="publishPrice">期望价</label>
+            <input class="field" id="publishPrice" type="number" value="49" min="1">
+          </div>
+          <div class="form-row full">
+            <label for="publishDesc">品相说明</label>
+            <input class="field" id="publishDesc" value="包装完整，背面有轻微使用痕迹，支持平台担保交易。">
+          </div>
+        </div>
+        <div class="publish-preview">
+          <div class="publish-icon">新</div>
+          <p class="muted">演示模式下不会上传真实数据，点击后仅在当前页面模拟新增商品。</p>
+        </div>
+        <button class="btn" id="submitPublish" type="button"><span>模拟发布</span></button>
+      </form>
+    </section>
+  </div>
+  <script src="script.js?v=20260617b"></script>
 </body>
 </html>
