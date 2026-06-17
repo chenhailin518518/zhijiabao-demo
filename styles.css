@@ -50,11 +50,15 @@ body.theme-dark {
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
   color: var(--ink);
   background:
@@ -152,6 +156,22 @@ select {
 img {
   max-width: 100%;
   display: block;
+}
+
+.site-header,
+.page-shell,
+.page-main,
+.content,
+.wide-content,
+.section,
+.hero,
+.hero-inner,
+.page-hero,
+.panel,
+.glass-card,
+.product-card,
+.modal-card {
+  min-width: 0;
 }
 
 .page-shell {
@@ -2049,6 +2069,17 @@ body.theme-dark .close-btn {
 }
 
 @media (max-width: 720px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    position: relative;
+  }
+
   body.nav-compact .site-header {
     height: auto;
   }
@@ -2062,12 +2093,16 @@ body.theme-dark .close-btn {
   .site-header {
     align-items: stretch;
     height: auto;
-    width: calc(100vw - 24px);
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: calc(100vw - 24px);
     top: 10px;
     padding: 12px;
     flex-direction: column;
     gap: 10px;
     border-radius: 18px;
+    transform: none;
   }
 
   .theme-toggle {
@@ -2079,10 +2114,21 @@ body.theme-dark .close-btn {
   }
 
   .brand {
+    min-width: 0;
     padding-right: 48px;
   }
 
+  .brand-title,
+  .brand-sub {
+    max-width: calc(100vw - 142px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .main-nav {
+    width: 100%;
+    max-width: 100%;
     flex-wrap: nowrap;
     gap: 6px;
     overflow-x: auto;
@@ -2104,12 +2150,32 @@ body.theme-dark .close-btn {
   }
 
   .page-main {
-    padding: 138px 16px 52px;
+    width: 100%;
+    max-width: 100%;
+    padding: 148px 12px 52px;
+    overflow-x: hidden;
   }
 
   .content,
   .wide-content {
-    width: min(100%, calc(100vw - 32px));
+    width: 100%;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: clamp(32px, 9vw, 42px);
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+  }
+
+  h2 {
+    font-size: clamp(24px, 7vw, 32px);
+    overflow-wrap: anywhere;
+  }
+
+  p,
+  .muted {
+    overflow-wrap: anywhere;
   }
 
   .hero {
@@ -2119,7 +2185,8 @@ body.theme-dark .close-btn {
   }
 
   .hero-inner {
-    width: min(100%, calc(100vw - 32px));
+    width: 100%;
+    max-width: 100%;
   }
 
   .hero-visual {
@@ -2134,6 +2201,7 @@ body.theme-dark .close-btn {
   .toolbar {
     align-items: flex-start;
     flex-direction: column;
+    width: 100%;
   }
 
   .feature-grid,
@@ -2151,8 +2219,55 @@ body.theme-dark .close-btn {
   }
 
   .page-hero {
-    padding: 28px;
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 18px;
     border-radius: 24px;
+  }
+
+  .estimator-layout,
+  .profile-layout,
+  .intro-panel,
+  .two-col {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .panel,
+  .glass-card,
+  .product-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .upload-zone {
+    min-height: 320px;
+    padding: 18px;
+  }
+
+  .upload-zone::before {
+    inset: 10px;
+  }
+
+  .upload-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 22px;
+    font-size: 30px;
+  }
+
+  .estimator-form {
+    padding: 20px 16px;
+  }
+
+  .field,
+  .select,
+  .btn {
+    max-width: 100%;
+  }
+
+  .condition-option {
+    min-width: 0;
   }
 
   .profile-layout {
