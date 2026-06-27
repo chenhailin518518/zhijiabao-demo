@@ -1,6 +1,6 @@
 /*
-  智价宝演示站 - 原生 JavaScript 交互
-  说明：全部数据均为静态模拟数据，不连接后端、数据库或外部接口。
+  智价宝官网 - 原生 JavaScript 交互
+  说明：全部数据均为静态数据，不连接后端、数据库或外部接口。
 */
 
 const DATA = {
@@ -563,7 +563,7 @@ function initDashboardCounters() {
    ========================= */
 function initEstimator() {
   const upload = $("#uploadZone");
-  const file = $("#mockUpload");
+  const file = $("#imageUpload");
   const preview = $("#uploadPreview");
   const button = $("#estimateBtn");
   const progress = $("#progressPanel");
@@ -898,7 +898,7 @@ function initProfile() {
     login.classList.add("loading");
     window.setTimeout(() => {
       login.classList.remove("loading");
-      $("#loginStatus").textContent = "已模拟登录：陈海林 · 智价宝项目队长";
+      $("#loginStatus").textContent = "已登录：陈海林 · 智价宝项目队长";
     }, 900);
   });
 }
