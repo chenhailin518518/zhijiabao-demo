@@ -1,4 +1,4 @@
-/*
+﻿/*
   智价宝官网 - 原生 JavaScript 交互
   说明：全部数据均为静态数据，不连接后端、数据库或外部接口。
 */
@@ -800,7 +800,7 @@ function initMarket() {
     const scenic = $("#publishScenic")?.value || "故宫博物院";
     const item = {
       id: `user-${Date.now()}`,
-      name: $("#publishName")?.value.trim() || "新发布文旅闲置",
+      name: $("#publishName")?.value.trim() || "新发布文创闲置",
       scenic,
       category: scenic.slice(0, 2),
       image: "assets/img/product-pin.png",
