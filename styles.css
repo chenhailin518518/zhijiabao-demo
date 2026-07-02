@@ -2362,6 +2362,21 @@ body.theme-dark .publish-preview {
     overflow-wrap: anywhere;
   }
 
+  .hero-title {
+    overflow: visible;
+  }
+
+  .hero-title .char {
+    display: inline;
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .shine-text::after {
+    display: none;
+  }
+
   h2 {
     font-size: clamp(24px, 7vw, 32px);
     overflow-wrap: anywhere;
@@ -2381,6 +2396,7 @@ body.theme-dark .publish-preview {
   .hero-inner {
     width: 100%;
     max-width: 100%;
+    padding: 0 16px;
   }
 
   .hero-visual {

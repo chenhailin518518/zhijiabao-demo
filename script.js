@@ -133,6 +133,16 @@ const DATA = {
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
+const scriptAssetPrefix = (() => {
+  const src = document.currentScript?.getAttribute("src") || "";
+  return src.startsWith("../") ? "../" : "";
+})();
+
+function assetPath(path) {
+  if (!path || /^(?:[a-z]+:|\/|#)/i.test(path)) return path;
+  return `${scriptAssetPrefix}${path}`;
+}
+
 const interactionSound = (() => {
   let audioContext = null;
   let masterGain = null;
@@ -484,6 +494,7 @@ function initReveal() {
 function initHeroText() {
   const title = $("[data-split-text]");
   if (!title) return;
+  if (window.matchMedia?.("(max-width: 720px)").matches) return;
   const text = title.textContent.trim();
   title.textContent = "";
   [...text].forEach((ch, index) => {
@@ -517,7 +528,7 @@ function productCard(product, mode = "home") {
 
   return `
     <article class="product-card ${mode === "home" ? "float-loop" : ""}" data-id="${product.id}">
-      <div class="product-image"><img src="${product.image}" alt="${product.name}"></div>
+      <div class="product-image"><img src="${assetPath(product.image)}" alt="${product.name}"></div>
       <div class="product-body">
         <div class="tag-row">
           <span class="tag">${product.scenic}</span>
@@ -828,7 +839,7 @@ function initMarket() {
 function openMarketDetail(product, modal) {
   if (!modal) return;
   $("#detailTitle").textContent = product.name;
-  $("#detailImage").src = product.image;
+  $("#detailImage").src = assetPath(product.image);
   $("#detailMeta").innerHTML = `
     <span class="tag">${product.scenic}</span>
     <span class="tag">${product.condition}</span>
