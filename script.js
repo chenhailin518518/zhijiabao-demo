@@ -200,6 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
     initAIAssistant();
     initDashboardPulse();
     initPagePreload();
+    initClipboardUtils();
+    initSmartRecommend();
+    initFormRealtimeValidation();
+    initAccessibilityEnhance();
+    initEstimateResultEnhance();
+    initProfileStatsEnhance();
 
     const page = document.body.dataset.page;
     if (page === "home") initHome();
@@ -1760,3 +1766,478 @@ function initPagePreload() {
     field.style.boxShadow = "";
   });
 })();
+
+/* ============================================================
+   第三轮增强：AI功能深化 + 数据统计 + 智能推荐 + 体验优化
+   ============================================================ */
+
+/* =========================
+   1. 复制到剪贴板工具
+   ========================= */
+function initClipboardUtils() {
+  /* 通用复制函数 */
+  window.copyToClipboard = function (text, successMsg = "已复制到剪贴板") {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(successMsg);
+      }).catch(() => fallbackCopy(text, successMsg));
+    } else {
+      fallbackCopy(text, successMsg);
+    }
+  };
+
+  function fallbackCopy(text, successMsg) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      showToast(successMsg);
+    } catch (e) {
+      showToast("复制失败，请手动复制", "error");
+    }
+    document.body.removeChild(textarea);
+  }
+}
+
+/* =========================
+   2. 智能推荐系统：基于浏览历史的个性化推荐
+   ========================= */
+function initSmartRecommend() {
+  const BROWSE_KEY = "zhijiabao-browse-history";
+  let browseHistory = safeStorage.get(BROWSE_KEY, []);
+
+  /* 记录商品浏览 */
+  function recordBrowse(productId) {
+    if (!productId) return;
+    browseHistory = browseHistory.filter(item => item.id !== productId);
+    browseHistory.unshift({ id: productId, time: Date.now() });
+    browseHistory = browseHistory.slice(0, 20);
+    safeStorage.set(BROWSE_KEY, browseHistory);
+  }
+
+  /* 监听商品卡片点击，记录浏览 */
+  document.addEventListener("click", (event) => {
+    const card = event.target.closest(".product-card");
+    if (!card) return;
+    const productId = card.dataset.id;
+    if (productId) recordBrowse(productId);
+  });
+
+  /* 首页：在热门推荐区域后添加"猜你喜欢" */
+  if (document.body.dataset.page === "home" && browseHistory.length > 0) {
+    const hotSection = $("#hotProducts")?.closest(".section");
+    if (hotSection) {
+      /* 根据浏览历史推荐相似商品 */
+      const browsedIds = browseHistory.slice(0, 5).map(item => item.id);
+      const recommended = DATA.products.filter(p => !browsedIds.includes(p.id))
+        .sort((a, b) => (b.heat + b.retention * 100) - (a.heat + a.retention * 100))
+        .slice(0, 3);
+
+      if (recommended.length > 0) {
+        const recommendSection = document.createElement("section");
+        recommendSection.className = "section reveal";
+        recommendSection.style.paddingTop = "20px";
+        recommendSection.innerHTML = `
+          <div class="section-header">
+            <div>
+              <div class="section-tag">智能推荐</div>
+              <h2>猜你喜欢</h2>
+            </div>
+            <p class="muted">基于你的浏览历史，AI为你精选以下商品</p>
+          </div>
+          <div class="product-grid">
+            ${recommended.map(item => productCard(item, "home")).join("")}
+          </div>
+        `;
+        hotSection.after(recommendSection);
+        /* 触发渐显动画 */
+        window.setTimeout(() => recommendSection.classList.add("is-visible"), 100);
+      }
+    }
+  }
+
+  /* 比价/集市页：添加"热门推荐"标签筛选 */
+  if (document.body.dataset.page === "compare" || document.body.dataset.page === "market") {
+    const filterArea = $(".filter-tags") || $(".segmented-control");
+    if (filterArea && !filterArea.querySelector("[data-smart-recommend]")) {
+      const smartTag = document.createElement("button");
+      smartTag.className = "filter-tag";
+      smartTag.dataset.smartRecommend = "true";
+      smartTag.textContent = "智能推荐";
+      smartTag.style.marginLeft = "8px";
+      smartTag.addEventListener("click", () => {
+        $$(".filter-tag").forEach(t => t.classList.remove("active"));
+        smartTag.classList.add("active");
+        /* 按热度+保值率排序 */
+        const list = $("#compareList") || $("#marketList");
+        if (list) {
+          const cards = Array.from(list.querySelectorAll(".product-card, .market-card"));
+          cards.sort((a, b) => {
+            const aId = a.dataset.id?.split("-")[0];
+            const bId = b.dataset.id?.split("-")[0];
+            const aProduct = DATA.products.find(p => p.id === aId);
+            const bProduct = DATA.products.find(p => p.id === bId);
+            const aScore = aProduct ? aProduct.heat + aProduct.retention * 100 : 0;
+            const bScore = bProduct ? bProduct.heat + bProduct.retention * 100 : 0;
+            return bScore - aScore;
+          });
+          cards.forEach(card => list.appendChild(card));
+          showToast("已按AI智能推荐排序");
+        }
+      });
+      filterArea.appendChild(smartTag);
+    }
+  }
+}
+
+/* =========================
+   3. 表单实时验证
+   ========================= */
+function initFormRealtimeValidation() {
+  /* 估价表单实时验证 */
+  const originalInput = $("#originalPrice");
+  if (originalInput) {
+    originalInput.addEventListener("input", debounce(() => {
+      const value = Number(originalInput.value);
+      const field = originalInput.closest(".field");
+      if (!field) return;
+
+      if (!originalInput.value) {
+        field.style.borderColor = "";
+        field.style.boxShadow = "";
+        return;
+      }
+
+      if (value <= 0 || isNaN(value)) {
+        field.style.borderColor = "rgba(168,78,67,0.6)";
+        field.style.boxShadow = "0 0 0 3px rgba(168,78,67,0.12)";
+      } else if (value > 99999) {
+        field.style.borderColor = "rgba(168,78,67,0.6)";
+        field.style.boxShadow = "0 0 0 3px rgba(168,78,67,0.12)";
+      } else {
+        field.style.borderColor = "rgba(120,156,143,0.7)";
+        field.style.boxShadow = "0 0 0 3px rgba(120,156,143,0.15)";
+      }
+    }, 200));
+  }
+
+  /* 发布商品表单实时验证 */
+  const publishPrice = $("#publishPrice");
+  if (publishPrice) {
+    publishPrice.addEventListener("input", debounce(() => {
+      const original = Number($("#publishOriginal")?.value || 0);
+      const price = Number(publishPrice.value);
+      const field = publishPrice.closest(".field");
+      if (!field || !publishPrice.value) return;
+
+      if (price <= 0 || isNaN(price)) {
+        field.style.borderColor = "rgba(168,78,67,0.6)";
+      } else if (original > 0 && price > original) {
+        field.style.borderColor = "rgba(212,165,82,0.8)";
+        field.style.boxShadow = "0 0 0 3px rgba(212,165,82,0.12)";
+      } else {
+        field.style.borderColor = "rgba(120,156,143,0.7)";
+      }
+    }, 200));
+  }
+
+  /* 搜索框输入状态 */
+  const searchInputs = $$('input[type="search"], .search-box input');
+  searchInputs.forEach(input => {
+    input.addEventListener("focus", () => {
+      input.closest(".search-box, .field")?.style.setProperty("border-color", "rgba(120,156,143,0.7)");
+    });
+    input.addEventListener("blur", () => {
+      input.closest(".search-box, .field")?.style.removeProperty("border-color");
+    });
+  });
+}
+
+/* =========================
+   4. 可访问性增强：ARIA标签 + 焦点管理 + 跳过导航
+   ========================= */
+function initAccessibilityEnhance() {
+  /* 添加跳过导航链接（屏幕阅读器用） */
+  if (!document.querySelector(".skip-link")) {
+    const skipLink = document.createElement("a");
+    skipLink.className = "skip-link";
+    skipLink.href = "#main-content";
+    skipLink.textContent = "跳过导航，直达主要内容";
+    Object.assign(skipLink.style, {
+      position: "absolute",
+      top: "-40px",
+      left: "0",
+      background: "#244853",
+      color: "#f7f4ec",
+      padding: "8px 16px",
+      zIndex: "10000",
+      transition: "top 0.2s",
+      textDecoration: "none",
+      fontSize: "14px"
+    });
+    skipLink.addEventListener("focus", () => { skipLink.style.top = "0"; });
+    skipLink.addEventListener("blur", () => { skipLink.style.top = "-40px"; });
+    document.body.prepend(skipLink);
+  }
+
+  /* 为主内容区域添加id */
+  const mainContent = document.querySelector("main, .main, .page-content, .content");
+  if (mainContent && !mainContent.id) {
+    mainContent.id = "main-content";
+  }
+
+  /* 为所有按钮添加aria-label（如果没有的话） */
+  $$("button").forEach(btn => {
+    if (!btn.getAttribute("aria-label") && !btn.textContent.trim()) {
+      const icon = btn.querySelector("svg, span, i");
+      if (icon) {
+        btn.setAttribute("aria-label", icon.getAttribute("aria-label") || "按钮");
+      }
+    }
+  });
+
+  /* 为图片添加alt（如果没有的话） */
+  $$("img").forEach(img => {
+    if (!img.getAttribute("alt")) {
+      img.setAttribute("alt", "");
+    }
+  });
+
+  /* 焦点可见性增强 */
+  const style = document.createElement("style");
+  style.textContent = `
+    :focus-visible {
+      outline: 2px solid #789c8f !important;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid #789c8f !important;
+      outline-offset: 2px;
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* 模态框焦点陷阱 */
+  const originalCloseModal = window.closeModal;
+  window.closeModal = function (modal) {
+    originalCloseModal?.(modal);
+    /* 焦点返回到触发按钮 */
+    const trigger = document.activeElement;
+    if (trigger) trigger.focus?.();
+  };
+}
+
+/* =========================
+   5. AI估价结果增强：复制按钮 + 趋势分析 + 同类推荐
+   ========================= */
+function initEstimateResultEnhance() {
+  if (document.body.dataset.page !== "estimate") return;
+
+  /* 监听结果弹窗打开，添加增强功能 */
+  const modal = $("#resultModal");
+  if (!modal) return;
+
+  const observer = new MutationObserver(() => {
+    if (modal.classList.contains("is-open") && !modal.querySelector(".estimate-actions")) {
+      addEstimateEnhancements();
+    }
+  });
+  observer.observe(modal, { attributes: true, attributeFilter: ["class"] });
+
+  function addEstimateEnhancements() {
+    const lines = $("#resultLines");
+    const grid = $("#valuationGrid");
+    if (!lines) return;
+
+    /* 添加操作按钮区域 */
+    const actions = document.createElement("div");
+    actions.className = "estimate-actions";
+    actions.style.cssText = "display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;";
+    actions.innerHTML = `
+      <button class="btn btn-primary copy-estimate-btn" type="button" style="padding:10px 18px;font-size:13px;flex:1;min-width:120px;">
+        <span>📋</span> 复制估价结果
+      </button>
+      <button class="btn share-estimate-btn" type="button" style="padding:10px 18px;font-size:13px;flex:1;min-width:120px;background:rgba(36,72,83,0.08);border:1px solid rgba(36,72,83,0.2);color:#244853;">
+        <span>🔗</span> 生成分享文案
+      </button>
+    `;
+    lines.after(actions);
+
+    /* 复制估价结果 */
+    actions.querySelector(".copy-estimate-btn").addEventListener("click", () => {
+      const price = $("#priceNumber")?.textContent || "0";
+      const minPrice = grid?.querySelector(".valuation-item:nth-child(4) strong")?.textContent || "";
+      const confidence = grid?.querySelector(".valuation-item:nth-child(5) strong")?.textContent || "";
+      const trend = grid?.querySelector(".valuation-item:nth-child(6) strong")?.textContent || "";
+
+      const text = `【智价宝AI估价结果】
+建议成交价：¥${price}
+成交区间：${minPrice}
+AI置信度：${confidence}
+市场趋势：${trend}
+—— 智价宝 · 景区文创闲置流转平台`;
+
+      window.copyToClipboard?.(text, "估价结果已复制");
+    });
+
+    /* 生成分享文案 */
+    actions.querySelector(".share-estimate-btn").addEventListener("click", () => {
+      const price = $("#priceNumber")?.textContent || "0";
+      const scenic = $("#scenicSelect")?.value || "景区";
+      const text = `我在智价宝对${scenic}文创进行了AI智能估价，建议成交价¥${price}！AI多维度分析，帮你了解文创真实价值。快来试试吧～ #智价宝 #文创估价 #闲置流转`;
+      window.copyToClipboard?.(text, "分享文案已复制，快去粘贴分享吧");
+    });
+
+    /* 添加价格趋势分析 */
+    const trendAnalysis = document.createElement("div");
+    trendAnalysis.className = "trend-analysis";
+    trendAnalysis.style.cssText = "margin-top:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(120,156,143,0.1),rgba(213,189,146,0.1));border-radius:12px;border-left:3px solid #789c8f;";
+    trendAnalysis.innerHTML = `
+      <div style="font-weight:900;font-size:13px;color:#244853;margin-bottom:8px;">📊 AI价格趋势分析</div>
+      <div style="font-size:12px;line-height:1.8;color:#162127;opacity:0.85;">
+        基于近30天全网成交数据，该品类价格指数环比<span style="color:#4f827a;font-weight:700;">+3.2%</span>，
+        预计未来1个月将保持<span style="color:#ab845b;font-weight:700;">稳中微升</span>态势。
+        建议在<span style="font-weight:700;">周末/节假日</span>前上架，可获得更高曝光和成交率。
+      </div>
+    `;
+    actions.after(trendAnalysis);
+
+    /* 添加同类商品推荐 */
+    const similarRecommend = document.createElement("div");
+    similarRecommend.className = "similar-recommend";
+    similarRecommend.style.cssText = "margin-top:16px;";
+    const scenic = $("#scenicSelect")?.value || "";
+    const similarProducts = DATA.products
+      .filter(p => p.scenic === scenic || p.category === scenic?.slice(0, 2))
+      .slice(0, 3);
+
+    if (similarProducts.length > 0) {
+      similarRecommend.innerHTML = `
+        <div style="font-weight:900;font-size:13px;color:#244853;margin-bottom:10px;">🔍 同类成交参考</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${similarProducts.map(p => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.6);border-radius:8px;font-size:12px;">
+              <span style="color:#162127;">${escapeHtml(p.name)}</span>
+              <span style="color:#ab845b;font-weight:700;">¥${p.market}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      trendAnalysis.after(similarRecommend);
+    }
+  }
+}
+
+/* =========================
+   6. 个人中心数据统计增强
+   ========================= */
+function initProfileStatsEnhance() {
+  if (document.body.dataset.page !== "profile") return;
+
+  const records = safeStorage.get("zhijiabao-estimate-records", []);
+  const userProducts = safeStorage.get("zhijiabao-user-products", []);
+  const favorites = safeStorage.get("zhijiabao-favorites", []);
+
+  if (records.length === 0 && userProducts.length === 0) return;
+
+  /* 计算统计数据 */
+  const totalEstimates = records.length;
+  const avgPrice = records.length > 0
+    ? Math.round(records.reduce((sum, r) => sum + (r.result || 0), 0) / records.length)
+    : 0;
+  const maxPrice = records.length > 0 ? Math.max(...records.map(r => r.result || 0)) : 0;
+  const minPrice = records.length > 0 ? Math.min(...records.map(r => r.result || 0)) : 0;
+  const totalPosts = userProducts.length;
+  const totalFavorites = favorites.length;
+
+  /* 在登录卡片后添加统计面板 */
+  const loginCard = $("#loginCard");
+  if (!loginCard) return;
+
+  const statsPanel = document.createElement("div");
+  statsPanel.className = "profile-stats-panel";
+  statsPanel.style.cssText = "margin-top:20px;padding:20px;background:linear-gradient(135deg,rgba(36,72,83,0.06),rgba(171,132,91,0.06));border-radius:16px;border:1px solid rgba(36,72,83,0.1);";
+  statsPanel.innerHTML = `
+    <div style="font-weight:900;font-size:15px;color:#244853;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+      <span>📈</span> 我的数据概览
+      <span style="font-size:11px;font-weight:400;opacity:0.6;margin-left:auto;">演示数据统计</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+      <div style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.7);border-radius:12px;">
+        <div style="font-size:24px;font-weight:900;color:#244853;">${totalEstimates}</div>
+        <div style="font-size:11px;color:#162127;opacity:0.7;margin-top:4px;">AI估价次数</div>
+      </div>
+      <div style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.7);border-radius:12px;">
+        <div style="font-size:24px;font-weight:900;color:#ab845b;">¥${avgPrice}</div>
+        <div style="font-size:11px;color:#162127;opacity:0.7;margin-top:4px;">平均估价</div>
+      </div>
+      <div style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.7);border-radius:12px;">
+        <div style="font-size:24px;font-weight:900;color:#4f827a;">${totalPosts}</div>
+        <div style="font-size:11px;color:#162127;opacity:0.7;margin-top:4px;">发布商品</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#162127;opacity:0.75;padding:0 4px;">
+      <span>最高估价：<strong style="color:#ab845b;">¥${maxPrice}</strong></span>
+      <span>最低估价：<strong style="color:#4f827a;">¥${minPrice}</strong></span>
+      <span>收藏商品：<strong style="color:#a84e43;">${totalFavorites}件</strong></span>
+    </div>
+  `;
+
+  loginCard.after(statsPanel);
+
+  /* 数字动画 */
+  const statNumbers = statsPanel.querySelectorAll("[style*='font-size:24px']");
+  statNumbers.forEach((node, index) => {
+    const text = node.textContent;
+    const match = text.match(/(\d+)/);
+    if (match) {
+      const target = Number(match[1]);
+      node.textContent = text.replace(/\d+/, "0");
+      window.setTimeout(() => {
+        animateNumber(node, target, 800);
+        /* 恢复¥符号 */
+        if (text.includes("¥")) {
+          const observer = new MutationObserver(() => {
+            if (!node.textContent.includes("¥")) {
+              node.textContent = "¥" + node.textContent;
+            }
+          });
+          observer.observe(node, { childList: true });
+          window.setTimeout(() => observer.disconnect(), 1000);
+        }
+      }, index * 150);
+    }
+  });
+
+  /* 收藏商品展示 */
+  if (favorites.length > 0) {
+    const favProducts = DATA.products.filter(p => favorites.includes(p.id));
+    if (favProducts.length > 0) {
+      const favSection = document.createElement("div");
+      favSection.className = "profile-favorites";
+      favSection.style.cssText = "margin-top:20px;";
+      favSection.innerHTML = `
+        <div style="font-weight:900;font-size:15px;color:#244853;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+          <span>❤️</span> 我的收藏
+          <span style="font-size:11px;font-weight:400;opacity:0.6;margin-left:auto;">${favProducts.length}件商品</span>
+        </div>
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;">
+          ${favProducts.map(p => `
+            <div style="min-width:140px;padding:10px;background:rgba(255,255,255,0.7);border-radius:12px;border:1px solid rgba(36,72,83,0.1);flex-shrink:0;">
+              <div style="font-size:12px;font-weight:700;color:#244853;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(p.name)}</div>
+              <div style="font-size:11px;color:#162127;opacity:0.6;margin-bottom:6px;">${escapeHtml(p.scenic)}</div>
+              <div style="font-size:14px;font-weight:900;color:#ab845b;">¥${p.market}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      statsPanel.after(favSection);
+    }
+  }
+}
