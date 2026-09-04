@@ -112,6 +112,39 @@ function escapeHtml(str) {
 }
 
 /* =========================
+   移动端检测与适配工具
+   ========================= */
+const isMobileDevice = () => {
+  if (typeof window === "undefined") return false;
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera || "";
+  const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+  const isMobileUA = mobileRegex.test(userAgent);
+  const isSmallScreen = window.innerWidth <= 768;
+  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  return isMobileUA || (isSmallScreen && isTouch);
+};
+
+const isTouchDevice = () => {
+  return "ontouchstart" in window || navigator.maxTouchPoints > 0 || window.matchMedia?.("(pointer: coarse)").matches;
+};
+
+/* 设置CSS变量 --vh（处理移动端浏览器地址栏问题） */
+function setViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+}
+
+/* 移动端优化：禁用某些桌面端功能 */
+function applyMobileOptimizations() {
+  if (isMobileDevice()) {
+    document.body.classList.add("is-mobile");
+  }
+  if (isTouchDevice()) {
+    document.body.classList.add("is-touch");
+  }
+}
+
+/* =========================
    轻量音效系统
    ========================= */
 const interactionSound = (() => {
@@ -179,6 +212,12 @@ const interactionSound = (() => {
    ========================= */
 document.addEventListener("DOMContentLoaded", () => {
   try {
+    /* 移动端适配初始化 */
+    setViewportHeight();
+    applyMobileOptimizations();
+    window.addEventListener("resize", debounce(setViewportHeight, 200));
+    window.addEventListener("orientationchange", () => setTimeout(setViewportHeight, 300));
+
     initThemeToggle();
     initInteractionSounds();
     initCursorGlow();
@@ -206,6 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initAccessibilityEnhance();
     initEstimateResultEnhance();
     initProfileStatsEnhance();
+    initMobileTouchOptimization();
 
     const page = document.body.dataset.page;
     if (page === "home") initHome();
@@ -410,7 +450,9 @@ function initParticles() {
     canvas.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     particles.length = 0;
-    const count = Math.min(76, Math.floor(width * height / 18000));
+    const count = isMobileDevice()
+      ? Math.min(32, Math.floor(width * height / 25000))
+      : Math.min(76, Math.floor(width * height / 18000));
     for (let i = 0; i < count; i += 1) {
       particles.push({
         x: Math.random() * width,
@@ -1375,6 +1417,8 @@ function initRippleEffect() {
    4. 商品卡片3D倾斜：悬停时根据鼠标位置微倾斜
    ========================= */
 function initCardTilt() {
+  /* 触摸设备禁用3D倾斜，提升性能 */
+  if (isTouchDevice()) return;
   if (window.matchMedia?.("(pointer: coarse)").matches) return;
 
   const maxTilt = 6;
@@ -2240,4 +2284,88 @@ function initProfileStatsEnhance() {
       statsPanel.after(favSection);
     }
   }
+}
+
+/* =========================
+   移动端触摸优化（防止双击缩放、键盘弹出适配等）
+   ========================= */
+function initMobileTouchOptimization() {
+  if (!isTouchDevice()) return;
+
+  /* 防止双击缩放 */
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  /* 防止手势缩放 */
+  document.addEventListener("gesturestart", (event) => {
+    event.preventDefault();
+  });
+
+  /* 输入框聚焦时自动滚动到可见区域 */
+  document.addEventListener("focusin", (event) => {
+    const target = event.target;
+    if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT") {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+  });
+
+  /* 键盘收起时恢复视口高度 */
+  const originalHeight = window.innerHeight;
+  window.addEventListener("resize", () => {
+    if (window.innerHeight < originalHeight * 0.75) {
+      /* 键盘弹出时 */
+      document.body.classList.add("keyboard-open");
+    } else {
+      /* 键盘收起时 */
+      document.body.classList.remove("keyboard-open");
+    }
+  });
+
+  /* 优化触摸滚动：防止页面滚动时触发点击 */
+  let touchStartY = 0;
+  let touchStartX = 0;
+  let isScrolling = false;
+
+  document.addEventListener("touchstart", (event) => {
+    touchStartY = event.touches[0].clientY;
+    touchStartX = event.touches[0].clientX;
+    isScrolling = false;
+  }, { passive: true });
+
+  document.addEventListener("touchmove", (event) => {
+    const deltaY = Math.abs(event.touches[0].clientY - touchStartY);
+    const deltaX = Math.abs(event.touches[0].clientX - touchStartX);
+    if (deltaY > 10 || deltaX > 10) {
+      isScrolling = true;
+    }
+  }, { passive: true });
+
+  /* 滚动时阻止点击事件 */
+  document.addEventListener("click", (event) => {
+    if (isScrolling) {
+      event.preventDefault();
+      event.stopPropagation();
+      isScrolling = false;
+    }
+  }, true);
+
+  /* 移动端禁用长按菜单（除了输入框和链接） */
+  document.addEventListener("contextmenu", (event) => {
+    const target = event.target;
+    if (target.closest(".product-card, .glass-card, .panel, .btn, button") &&
+        !target.closest("input, textarea, a")) {
+      event.preventDefault();
+    }
+  });
+
+  /* 添加移动端类名到HTML */
+  document.documentElement.classList.add("touch-device");
 }
