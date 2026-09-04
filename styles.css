@@ -1,4 +1,4 @@
-﻿/*
+/*
   智价宝官网 - 全局样式
   技术栈：HTML5 + CSS3 + 原生 JavaScript
   视觉关键词：新中式轻奢国风、青黛、月白、浅茶棕、毛玻璃、渐变光影
@@ -2746,5 +2746,382 @@ body.theme-dark .publish-preview {
   }
   60%, 100% {
     transform: translateX(120%);
+  }
+}
+/* ============================================================
+   移动端全面适配（新增功能 + 全局优化）
+   ============================================================ */
+
+/* --- 720px以下：手机端适配 --- */
+@media (max-width: 720px) {
+  /* 全局可点击区域最小44px（符合移动端规范） */
+  button, .btn, .nav-link, .filter-tag, .condition-option,
+  .fav-btn, .ai-quick-q, .ai-chat-send {
+    min-height: 44px;
+    min-width: 44px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* 输入框优化 */
+  input, select, textarea {
+    font-size: 16px; /* 防止iOS自动缩放 */
+    min-height: 44px;
+  }
+
+  /* AI助手浮动按钮：移动端位置和大小调整 */
+  .ai-assistant-fab {
+    width: 52px !important;
+    height: 52px !important;
+    right: 16px !important;
+    bottom: 16px !important;
+    font-size: 20px !important;
+  }
+
+  /* AI助手面板：移动端全宽适配 */
+  .ai-assistant-panel {
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    bottom: 80px !important;
+    max-height: 70vh !important;
+    border-radius: 20px !important;
+  }
+
+  .ai-chat-messages {
+    max-height: 35vh !important;
+    min-height: 180px !important;
+  }
+
+  /* 回到顶部按钮：移动端位置调整 */
+  .back-to-top-btn {
+    width: 44px !important;
+    height: 44px !important;
+    right: 16px !important;
+    bottom: 80px !important;
+    font-size: 18px !important;
+  }
+
+  /* 收藏按钮：移动端大小调整 */
+  .fav-btn {
+    width: 40px !important;
+    height: 40px !important;
+    top: 10px !important;
+    right: 10px !important;
+  }
+
+  /* 个人中心统计面板：移动端单列布局 */
+  .profile-stats-panel {
+    padding: 16px !important;
+    margin-top: 16px !important;
+  }
+
+  .profile-stats-panel > div[style*="grid-template-columns"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .profile-stats-panel > div[style*="grid-template-columns"] > div {
+    padding: 10px 6px !important;
+  }
+
+  .profile-stats-panel > div[style*="grid-template-columns"] > div > div:first-child {
+    font-size: 20px !important;
+  }
+
+  /* 收藏商品横向滚动：移动端优化 */
+  .profile-favorites > div[style*="display:flex"] {
+    gap: 8px !important;
+    padding-bottom: 12px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-favorites > div[style*="display:flex"] > div {
+    min-width: 130px !important;
+    padding: 10px !important;
+  }
+
+  /* 估价结果增强区域：移动端按钮全宽 */
+  .estimate-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .estimate-actions .btn {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* 价格趋势分析和同类推荐：移动端间距优化 */
+  .trend-analysis, .similar-recommend {
+    margin-top: 14px !important;
+    padding: 12px 14px !important;
+  }
+
+  /* 智能推荐区域：移动端单列 */
+  .section.reveal .product-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 滚动进度条：移动端更细 */
+  .scroll-progress-bar {
+    height: 2px !important;
+  }
+
+  /* 跳过导航链接：移动端优化 */
+  .skip-link {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+  }
+
+  /* Toast提示：移动端全宽 */
+  .publish-toast {
+    left: 16px !important;
+    right: 16px !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none !important;
+    font-size: 13px !important;
+    padding: 12px 16px !important;
+  }
+
+  /* 弹窗：移动端适配 */
+  .modal-card {
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+    max-height: 85vh !important;
+    border-radius: 20px !important;
+    margin: 16px !important;
+  }
+
+  .modal-body {
+    padding: 16px !important;
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 估值网格：移动端2列 */
+  #valuationGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .valuation-item {
+    padding: 10px 8px !important;
+  }
+
+  .valuation-item strong {
+    font-size: 13px !important;
+  }
+
+  .valuation-item span {
+    font-size: 11px !important;
+  }
+
+  /* 表单：移动端间距优化 */
+  .field, .select {
+    min-height: 48px !important;
+  }
+
+  .field input, .select select {
+    min-height: 48px !important;
+    padding: 0 14px !important;
+  }
+
+  /* 按钮波纹：移动端减小尺寸 */
+  .ripple-effect span {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* 骨架屏：移动端优化 */
+  .skeleton-card {
+    min-height: 200px !important;
+  }
+
+  /* 粒子背景：移动端减少粒子 */
+  #particleCanvas {
+    opacity: 0.5 !important;
+  }
+
+  /* 鼠标跟随：移动端禁用 */
+  .cursor-glow, .cursor-trail-dot {
+    display: none !important;
+  }
+}
+
+/* --- 480px以下：小屏幕额外适配 --- */
+@media (max-width: 480px) {
+  .page-main {
+    padding: 140px 10px 40px !important;
+  }
+
+  h1 {
+    font-size: clamp(28px, 10vw, 36px) !important;
+  }
+
+  h2 {
+    font-size: clamp(22px, 8vw, 28px) !important;
+  }
+
+  .section {
+    padding: 32px 0 !important;
+  }
+
+  .section-header {
+    margin-bottom: 20px !important;
+  }
+
+  /* AI助手面板：小屏幕更紧凑 */
+  .ai-assistant-panel {
+    max-height: 75vh !important;
+  }
+
+  .ai-chat-messages {
+    max-height: 30vh !important;
+    min-height: 150px !important;
+  }
+
+  /* 个人中心统计：小屏幕2列 */
+  .profile-stats-panel > div[style*="grid-template-columns"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 估值网格：小屏幕单列 */
+  #valuationGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 按钮：小屏幕全宽 */
+  .btn-primary, .btn-secondary {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* 工具栏：小屏幕更紧凑 */
+  .toolbar {
+    gap: 10px !important;
+  }
+
+  .search-box {
+    width: 100% !important;
+  }
+
+  /* 筛选标签：小屏幕横向滚动 */
+  .filter-tags {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px !important;
+  }
+
+  .filter-tag {
+    flex: 0 0 auto !important;
+  }
+}
+
+/* --- 触摸设备优化 --- */
+@media (hover: none), (pointer: coarse) {
+  /* 禁用hover效果 */
+  .product-card:hover,
+  .glass-card:hover,
+  .panel:hover,
+  .btn:hover,
+  .nav-link:hover,
+  .filter-tag:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 禁用3D卡片倾斜 */
+  .product-card, .glass-card, .panel {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* 禁用鼠标跟随 */
+  .cursor-glow, .cursor-trail-dot {
+    display: none !important;
+  }
+
+  /* 触摸反馈：active状态 */
+  .btn:active, button:active, .nav-link:active, .filter-tag:active {
+    transform: scale(0.96) !important;
+    transition: transform 100ms ease !important;
+  }
+
+  /* 收藏按钮触摸反馈 */
+  .fav-btn:active {
+    transform: scale(1.2) !important;
+  }
+
+  /* AI助手按钮触摸反馈 */
+  .ai-assistant-fab:active {
+    transform: scale(0.9) !important;
+  }
+
+  /* 禁用文字选择（防止长按选中） */
+  .product-card, .glass-card, .panel, .btn, button {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 允许输入框文字选择 */
+  input, textarea, [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* 优化滚动性能 */
+  .product-grid, .market-grid, .main-nav, .filter-tags {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* --- 横屏手机适配 --- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero {
+    min-height: auto !important;
+    padding-top: 100px !important;
+    padding-bottom: 40px !important;
+  }
+
+  .hero-visual {
+    min-height: 200px !important;
+  }
+
+  .modal-card {
+    max-height: 90vh !important;
+  }
+
+  .ai-assistant-panel {
+    max-height: 80vh !important;
+  }
+}
+
+/* --- 高对比度模式适配 --- */
+@media (prefers-contrast: high) {
+  .scroll-progress-bar {
+    height: 4px !important;
+  }
+
+  .btn, button {
+    border-width: 2px !important;
+  }
+}
+
+/* --- 减少动画模式适配 --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .cursor-glow, .cursor-trail-dot, #particleCanvas {
+    display: none !important;
   }
 }
