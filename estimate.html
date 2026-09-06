@@ -147,6 +147,16 @@
       <div class="price-result"><span class="currency">¥</span><span class="number" id="priceNumber">0</span></div>
       <div class="valuation-grid" id="valuationGrid"></div>
       <div class="result-lines" id="resultLines"></div>
+      <div class="share-section" id="shareSection" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(36,72,83,0.1);display:flex;align-items:center;gap:16px;">
+        <div style="flex:1;">
+          <p style="font-size:13px;color:#162127;margin:0 0 6px;font-weight:600;">📤 分享估价结果</p>
+          <p style="font-size:11px;color:#162127;opacity:0.6;margin:0;">扫码查看估价详情，或复制文案分享给好友</p>
+        </div>
+        <div id="qrcodeContainer" style="width:88px;height:88px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 2px 12px rgba(0,0,0,0.08);flex-shrink:0;">
+          <img id="qrcodeImg" src="" alt="分享二维码" style="width:100%;height:100%;object-fit:contain;display:none;">
+          <div id="qrcodePlaceholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#4f827a;opacity:0.5;">生成中</div>
+        </div>
+      </div>
     </section>
   </div>
   <script src="api-services.js?v=20260906a"></script>

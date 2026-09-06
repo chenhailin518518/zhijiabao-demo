@@ -1020,6 +1020,26 @@ function openEstimateModal(valuation) {
     <p style="animation-delay: 360ms">建议上架价 ¥${valuation.listingPrice}（预留议价空间）；急售可降至 ¥${valuation.rushPrice}；预计一年后保值约 ¥${valuation.futureValue}（保值率${valuation.retentionRate}%）。</p>
   `;
 
+  /* 生成分享二维码 */
+  const qrImg = $("#qrcodeImg");
+  const qrPlaceholder = $("#qrcodePlaceholder");
+  const qrService = window.ZhijiabaoAPI?.QRCodeService;
+  if (qrImg && qrService) {
+    const shareText = `【智价宝AI估价】${valuation.scenic}文创 | 原价¥${valuation.original} → 估价¥${valuation.result} | ${valuation.weatherIcon}${valuation.temperature || ""}°C ${valuation.weatherLabel} | 天气系数${valuation.weatherFactor.toFixed(3)}`;
+    const qrUrl = qrService.generateUrl(shareText, 180);
+    qrImg.onload = () => {
+      qrImg.style.display = "block";
+      if (qrPlaceholder) qrPlaceholder.style.display = "none";
+    };
+    qrImg.onerror = () => {
+      if (qrPlaceholder) {
+        qrPlaceholder.textContent = "生成失败";
+        qrPlaceholder.style.opacity = "0.4";
+      }
+    };
+    qrImg.src = qrUrl;
+  }
+
   modal.classList.add("is-open");
   interactionSound.play("modal");
   animateNumber(number, valuation.result, 900);
@@ -1108,6 +1128,60 @@ function initMarket() {
   const publishModal = $("#publishModal");
   let mode = "personal";
   let renderCount = 6;
+
+  /* ===== 今日景区天气模块 ===== */
+  const weatherStrip = $("#weatherStrip");
+  const weatherUpdateTime = $("#weatherUpdateTime");
+  let marketWeatherMap = {};
+
+  function renderWeatherCards(weatherMap) {
+    if (!weatherStrip) return;
+    const scenics = Object.keys(window.ZhijiabaoAPI?.SCENIC_COORDINATES || {});
+    const html = scenics.map(scenic => {
+      const w = weatherMap[scenic];
+      if (w && !w.isDegraded) {
+        const trend = w.weatherFactor > 1.0 ? "利好" : w.weatherFactor < 1.0 ? "承压" : "中性";
+        const trendColor = w.weatherFactor > 1.0 ? "#4f827a" : w.weatherFactor < 1.0 ? "#ab845b" : "#162127";
+        return `
+          <div class="weather-card" style="background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(245,240,232,0.8));border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,0.04);border:1px solid rgba(213,189,146,0.2);transition:transform .2s;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <span style="font-size:12px;font-weight:600;color:#162127;">${scenic.slice(0,4)}</span>
+              <span style="font-size:20px;">${w.weatherIcon}</span>
+            </div>
+            <div style="font-size:22px;font-weight:700;color:#162127;line-height:1;">${w.temperature}°C</div>
+            <div style="font-size:11px;color:#162127;opacity:0.6;margin-top:4px;">${w.weatherLabel} · 湿度${w.humidity}%</div>
+            <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(36,72,83,0.08);">
+              <span style="font-size:10px;color:${trendColor};font-weight:600;">流转${trend} · 系数${w.weatherFactor.toFixed(3)}</span>
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="weather-card" style="background:rgba(255,255,255,0.5);border-radius:16px;padding:14px;opacity:0.5;border:1px dashed rgba(213,189,146,0.3);">
+          <div style="font-size:12px;font-weight:600;color:#162127;margin-bottom:8px;">${scenic.slice(0,4)}</div>
+          <div style="font-size:11px;color:#162127;opacity:0.5;">天气获取中...</div>
+        </div>`;
+    }).join("");
+    weatherStrip.innerHTML = html;
+  }
+
+  /* 加载所有景区天气（并行） */
+  function loadAllWeather() {
+    const weatherAPI = window.ZhijiabaoAPI?.WeatherService;
+    if (!weatherAPI || !weatherStrip) return;
+    const scenics = Object.keys(window.ZhijiabaoAPI.SCENIC_COORDINATES);
+    renderWeatherCards({}); /* 先渲染占位 */
+    weatherAPI.getBatch(scenics).then(map => {
+      marketWeatherMap = map;
+      renderWeatherCards(map);
+      if (weatherUpdateTime) {
+        const now = new Date();
+        weatherUpdateTime.textContent = `更新于 ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+      }
+      console.log("[市场页] 天气加载完成:", Object.keys(map).length, "个景区");
+    }).catch(e => console.warn("[市场页] 天气加载失败:", e));
+  }
+  loadAllWeather();
+  /* ===== 天气模块结束 ===== */
   const userItems = safeStorage.get("zhijiabao-user-products", []);
   const favorites = safeStorage.get("zhijiabao-favorites", []);
 
