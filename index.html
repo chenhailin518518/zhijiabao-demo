@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>智价宝 - 景区文创闲置流转平台</title>
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=20260906b">
+  <link rel="stylesheet" href="styles.css?v=20260906c">
 </head>
 <body data-page="home" class="skeleton-active">
   <canvas id="particleCanvas" aria-hidden="true"></canvas>
@@ -84,9 +84,9 @@
               <a class="btn secondary" href="market/" data-transition><span>浏览集市</span></a>
             </div>
             <div class="hero-metrics reveal">
-              <div class="metric"><strong>5秒</strong><span>AI 估价报告</span></div>
-              <div class="metric"><strong>4类</strong><span>景区文创品类适配</span></div>
-              <div class="metric"><strong>20+</strong><span>平台数据点</span></div>
+              <div class="metric"><strong>8景区</strong><span>内置坐标与热度</span></div>
+              <div class="metric"><strong>6维度</strong><span>AI估价算法</span></div>
+              <div class="metric"><strong>0成本</strong><span>免费API接入</span></div>
             </div>
           </div>
           <aside class="hero-visual glass-card reveal" aria-label="AI估价面板">
@@ -139,33 +139,67 @@
       </section>
 
       <section class="section content">
-        <div class="section-title reveal">
-            <div>
-              <p class="section-kicker">Platform Dashboard</p>
-            <h2>平台数据看板</h2>
+        <div class="section-title stack-title reveal">
+          <div>
+            <p class="section-kicker">Core Capabilities</p>
+            <h2>核心能力矩阵</h2>
           </div>
-          <p class="muted">以下为平台演示数据（模拟经营场景），用于呈现智价宝的运营状态和增长态势，实际部署后将接入真实业务数据。</p>
+          <p class="muted">基于真实技术能力构建，每一项都已在产品中落地运行。</p>
         </div>
-        <div class="dashboard-grid reveal">
-          <article class="glass-card data-card">
-            <span>累计估价</span>
-            <strong data-count="1286">1,286</strong>
-            <p>覆盖景区文创、纪念周边、非遗手作等品类</p>
+        <div class="capability-grid reveal">
+          <article class="capability-card">
+            <div class="capability-icon" style="background:linear-gradient(135deg,#4f827a,#6ba39a);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="capability-body">
+              <strong>8大景区覆盖</strong>
+              <p>故宫、西湖、敦煌、黄山、平遥、武夷山、大雁塔、丽江，内置精准坐标与热度系数</p>
+            </div>
           </article>
-          <article class="glass-card data-card">
-            <span>闲置商品</span>
-            <strong data-count="436">436</strong>
-            <p>个人闲置与商户尾货入驻商品</p>
+          <article class="capability-card">
+            <div class="capability-icon" style="background:linear-gradient(135deg,#ab845b,#c9a87c);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+            </div>
+            <div class="capability-body">
+              <strong>6维AI估价算法</strong>
+              <p>品相折旧、景区热度、季节系数、天气因子、关键词加成、供需指数，多维度加权计算</p>
+            </div>
           </article>
-          <article class="glass-card data-card">
-            <span>合作景区</span>
-            <strong data-count="28">28</strong>
-            <p>故宫、西湖、敦煌、黄山等核心示范场景</p>
+          <article class="capability-card">
+            <div class="capability-icon" style="background:linear-gradient(135deg,#5b8ab8,#7ba8d4);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+            </div>
+            <div class="capability-body">
+              <strong>实时天气接入</strong>
+              <p>对接Open-Meteo免费API，8大景区实时天气自动融入估价模型，15分钟智能缓存</p>
+            </div>
           </article>
-          <article class="glass-card data-card">
-            <span>流转金额</span>
-            <strong>¥18.7万</strong>
-            <p>以合理定价提高文创闲置产品流通效率</p>
+          <article class="capability-card">
+            <div class="capability-icon" style="background:linear-gradient(135deg,#8b5fbf,#a87dd4);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            </div>
+            <div class="capability-body">
+              <strong>全端响应式适配</strong>
+              <p>手机、平板、桌面三端完美适配，720px/480px/360px三档断点，触控区域优化</p>
+            </div>
+          </article>
+          <article class="capability-card">
+            <div class="capability-icon" style="background:linear-gradient(135deg,#c75b5b,#e07b7b);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="capability-body">
+              <strong>纯前端零依赖</strong>
+              <p>原生JavaScript开发，无需后端服务器，GitHub Pages直接部署，API Key零暴露风险</p>
+            </div>
+          </article>
+          <article class="capability-card">
+            <div class="capability-icon" style="background:linear-gradient(135deg,#5ba87a,#7bc49a);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>
+            </div>
+            <div class="capability-body">
+              <strong>二维码分享</strong>
+              <p>估价结果一键生成分享二维码，扫码直达估价详情，适合线下景区场景传播引流</p>
+            </div>
           </article>
         </div>
       </section>
