@@ -3125,3 +3125,411 @@ body.theme-dark .publish-preview {
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   移动端适配优化（天气模块 / 二维码分享 / 表单 / 弹窗）
+   ============================================================ */
+
+/* --- 720px以下：平板和手机 --- */
+@media (max-width: 720px) {
+  /* 天气模块：2列网格，卡片更紧凑 */
+  #weatherStrip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .weather-card {
+    padding: 12px !important;
+  }
+
+  /* 天气模块标题区域 */
+  #weatherSection > div:first-child {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  #weatherSection h2 {
+    font-size: 18px !important;
+  }
+
+  #weatherUpdateTime {
+    font-size: 11px !important;
+  }
+
+  /* 二维码分享区域：纵向排列 */
+  #shareSection {
+    flex-direction: column-reverse !important;
+    align-items: center !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+
+  #shareSection > div:first-child {
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  #shareSection p {
+    text-align: center !important;
+  }
+
+  #qrcodeContainer {
+    width: 120px !important;
+    height: 120px !important;
+    padding: 5px !important;
+  }
+
+  /* 估价表单：单列布局 */
+  .estimator-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .upload-zone {
+    min-height: 180px !important;
+  }
+
+  /* 表单网格：单列 */
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .form-row.full {
+    grid-column: 1 !important;
+  }
+
+  /* 品相选择：2列 */
+  .condition-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .condition-option {
+    padding: 10px 8px !important;
+    font-size: 13px !important;
+  }
+
+  /* 估价按钮：全宽 */
+  #estimateBtn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* 进度面板 */
+  #progressPanel {
+    padding: 16px !important;
+  }
+
+  #weatherBadge {
+    font-size: 12px !important;
+  }
+
+  /* 弹窗：全屏适配 */
+  .modal-card {
+    width: calc(100vw - 32px) !important;
+    max-width: 100% !important;
+    max-height: 88vh !important;
+    margin: 16px !important;
+    padding: 20px 16px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .modal-head {
+    padding-bottom: 12px !important;
+  }
+
+  .modal-head h2 {
+    font-size: 20px !important;
+  }
+
+  /* 价格结果 */
+  .price-result {
+    font-size: 48px !important;
+    padding: 16px 0 !important;
+  }
+
+  .price-result .currency {
+    font-size: 24px !important;
+  }
+
+  /* 估值网格：2列 */
+  #valuationGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .valuation-item {
+    padding: 10px 8px !important;
+  }
+
+  .valuation-item span {
+    font-size: 11px !important;
+  }
+
+  .valuation-item strong {
+    font-size: 13px !important;
+  }
+
+  /* 结果文字 */
+  #resultLines p {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* 市场页工具栏：纵向排列 */
+  .toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .tag-filter {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 4px !important;
+    justify-content: flex-start !important;
+  }
+
+  .filter-tag {
+    flex: 0 0 auto !important;
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  .segment {
+    width: 100% !important;
+  }
+
+  .segment button {
+    flex: 1 !important;
+    font-size: 13px !important;
+    padding: 10px !important;
+  }
+
+  .publish-entry {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* 市场商品网格：2列 */
+  .market-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* 商品卡片 */
+  .product-card {
+    padding: 12px !important;
+  }
+
+  .product-card h3 {
+    font-size: 14px !important;
+  }
+
+  /* 两列布局：单列 */
+  .two-col {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .two-col img {
+    max-height: 240px !important;
+    object-fit: cover !important;
+  }
+
+  /* 发布表单：单列 */
+  .publish-form .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 页面Hero */
+  .page-hero {
+    padding: 24px 0 !important;
+  }
+
+  .page-hero h1 {
+    font-size: 28px !important;
+    line-height: 1.3 !important;
+  }
+
+  .page-hero .muted {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  .section-kicker {
+    font-size: 11px !important;
+    letter-spacing: 1px !important;
+  }
+
+  /* 头部导航 */
+  .site-header {
+    padding: 10px 16px !important;
+  }
+
+  .brand-title {
+    font-size: 16px !important;
+  }
+
+  .brand-sub {
+    font-size: 10px !important;
+  }
+
+  .main-nav {
+    gap: 4px !important;
+  }
+
+  .nav-link {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* 主题切换按钮 */
+  .theme-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px !important;
+  }
+
+  /* 回到顶部按钮 */
+  .back-to-top {
+    width: 40px !important;
+    height: 40px !important;
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+
+  /* 骨架屏 */
+  .skeleton-card-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* --- 480px以下：小屏手机额外优化 --- */
+@media (max-width: 480px) {
+  /* 天气模块 */
+  #weatherStrip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .weather-card {
+    padding: 10px !important;
+  }
+
+  /* 估值网格 */
+  #valuationGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .valuation-item {
+    padding: 8px 6px !important;
+  }
+
+  .valuation-item span {
+    font-size: 10px !important;
+  }
+
+  .valuation-item strong {
+    font-size: 12px !important;
+  }
+
+  /* 价格结果 */
+  .price-result {
+    font-size: 42px !important;
+  }
+
+  /* 市场商品网格 */
+  .market-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* 表单输入：防止iOS缩放 */
+  .field, .select {
+    font-size: 16px !important;
+    padding: 12px 14px !important;
+    min-height: 44px !important;
+  }
+
+  /* 按钮：更大触控区域 */
+  .btn {
+    min-height: 44px !important;
+    font-size: 14px !important;
+  }
+
+  /* 弹窗关闭按钮 */
+  .close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 20px !important;
+  }
+
+  /* 页面主内容 */
+  .page-main {
+    padding: 120px 12px 40px !important;
+  }
+
+  .wide-content {
+    padding: 0 !important;
+  }
+
+  /* 面板 */
+  .panel {
+    padding: 16px !important;
+  }
+}
+
+/* --- 360px以下：超小屏 --- */
+@media (max-width: 360px) {
+  #weatherStrip {
+    grid-template-columns: 1fr !important;
+  }
+
+  #valuationGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .market-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .main-nav {
+    gap: 2px !important;
+  }
+
+  .nav-link {
+    padding: 6px 6px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* --- 横屏手机优化 --- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .modal-card {
+    max-height: 92vh !important;
+    padding: 16px !important;
+  }
+
+  .price-result {
+    font-size: 36px !important;
+    padding: 8px 0 !important;
+  }
+
+  #valuationGrid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .page-main {
+    padding: 80px 16px 30px !important;
+  }
+}
