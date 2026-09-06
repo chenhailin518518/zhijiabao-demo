@@ -4963,3 +4963,164 @@ body.theme-dark .publish-preview {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+
+/* ============================================================
+   手机端Bug修复：导航圆形指示器 + 功能卡片高度
+   ============================================================ */
+
+@media (max-width: 720px) {
+  /* ===== 修复导航栏active圆形指示器 ===== */
+  .nav-link {
+    border-radius: 8px !important;
+    padding: 7px 10px !important;
+  }
+
+  .nav-link::before,
+  .nav-link::after {
+    border-radius: 8px !important;
+  }
+
+  /* active状态改用底部下划线，更清晰 */
+  .nav-link.active {
+    background: linear-gradient(135deg, rgba(79,130,122,0.12), rgba(171,132,91,0.08)) !important;
+    color: #4f827a !important;
+  }
+
+  .nav-link.active::after {
+    opacity: 0 !important;
+  }
+
+  .nav-link.active::before {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  /* ===== 修复功能卡片最小高度 ===== */
+  .feature-card {
+    min-height: auto !important;
+    padding: 18px !important;
+  }
+
+  .feature-icon {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .feature-card h3 {
+    font-size: 15px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .feature-card p {
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* ===== 核心能力卡片紧凑化 ===== */
+  .capability-card {
+    padding: 14px !important;
+    gap: 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .capability-icon {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 10px !important;
+  }
+
+  .capability-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .capability-body strong {
+    font-size: 13px !important;
+    margin-bottom: 3px !important;
+  }
+
+  .capability-body p {
+    font-size: 11px !important;
+    line-height: 1.55 !important;
+  }
+
+  .capability-grid {
+    gap: 10px !important;
+    margin-top: 16px !important;
+  }
+
+  /* ===== Section间距紧凑化 ===== */
+  .section {
+    padding: 28px 0 !important;
+  }
+
+  .section-title {
+    margin-bottom: 16px !important;
+  }
+
+  .section-title h2 {
+    font-size: 20px !important;
+  }
+
+  .section-title .muted {
+    font-size: 12px !important;
+    margin-top: 6px !important;
+  }
+
+  /* ===== 页面主内容间距 ===== */
+  .page-main {
+    padding: 88px 14px 40px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 更小屏幕进一步紧凑 */
+  .nav-link {
+    padding: 6px 8px !important;
+    font-size: 10px !important;
+  }
+
+  .feature-card {
+    padding: 16px !important;
+  }
+
+  .feature-icon {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .capability-card {
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+
+  .capability-icon {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+  }
+
+  .capability-body strong {
+    font-size: 12px !important;
+  }
+
+  .capability-body p {
+    font-size: 10px !important;
+  }
+
+  .section {
+    padding: 24px 0 !important;
+  }
+
+  .section-title h2 {
+    font-size: 18px !important;
+  }
+}
