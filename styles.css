@@ -5124,3 +5124,396 @@ body.theme-dark .publish-preview {
     font-size: 18px !important;
   }
 }
+
+
+/* ============================================================
+   深度全面美化优化（国风装饰 / 渐变背景 / 动画 / 视觉层次）
+   ============================================================ */
+
+/* --- 全局背景优化 --- */
+body {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(171,132,91,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(79,130,122,0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #faf8f3 0%, #f5f0e6 50%, #faf8f3 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* 国风网格纹理背景（极淡） */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(171,132,91,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(171,132,91,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 确保内容在背景之上 */
+.site-header, .page-main, .site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- 导航栏美化升级 --- */
+.site-header {
+  background: rgba(255,255,255,0.85) !important;
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border-bottom: 1px solid rgba(171,132,91,0.12);
+  box-shadow: 0 4px 24px rgba(36,72,83,0.06);
+}
+
+.brand-mark {
+  background: linear-gradient(135deg, #4f827a 0%, #6ba39a 50%, #ab845b 100%) !important;
+  box-shadow: 0 4px 12px rgba(79,130,122,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* --- Hero区域深度美化 --- */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hero装饰光晕 */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(171,132,91,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatGlow 8s ease-in-out infinite;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(79,130,122,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatGlow 10s ease-in-out infinite reverse;
+}
+
+@keyframes floatGlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.05); }
+}
+
+/* Hero标题渐变文字 */
+.hero-title {
+  background: linear-gradient(135deg, #162127 0%, #4f827a 50%, #ab845b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero徽章美化 */
+.hero-badge {
+  background: linear-gradient(135deg, rgba(79,130,122,0.1), rgba(171,132,91,0.1)) !important;
+  border: 1px solid rgba(171,132,91,0.25) !important;
+  box-shadow: 0 2px 8px rgba(79,130,122,0.08);
+}
+
+/* --- 按钮深度美化 --- */
+.btn.primary {
+  background: linear-gradient(135deg, #4f827a 0%, #6ba39a 100%) !important;
+  box-shadow: 0 4px 16px rgba(79,130,122,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: none !important;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, #3d6b64 0%, #5a9289 100%) !important;
+  box-shadow: 0 8px 24px rgba(79,130,122,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.btn.secondary {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(250,247,240,0.9)) !important;
+  border: 1px solid rgba(171,132,91,0.3) !important;
+  box-shadow: 0 2px 8px rgba(36,72,83,0.06);
+}
+
+.btn.secondary:hover {
+  border-color: rgba(171,132,91,0.5) !important;
+  box-shadow: 0 4px 16px rgba(36,72,83,0.1);
+}
+
+/* --- 卡片深度美化 --- */
+.glass-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(250,247,240,0.9)) !important;
+  border: 1px solid rgba(171,132,91,0.15) !important;
+  box-shadow: 0 4px 20px rgba(36,72,83,0.06), 0 1px 3px rgba(36,72,83,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+/* 卡片顶部装饰线 */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(171,132,91,0.4), transparent);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glass-card:hover::before {
+  opacity: 1;
+}
+
+/* --- Section标题美化 --- */
+.section-kicker {
+  color: #ab845b !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase;
+}
+
+.section-title h2 {
+  color: #162127 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px;
+}
+
+.section-title h2::after {
+  background: linear-gradient(90deg, #ab845b, #d5bd92, transparent) !important;
+  height: 3px !important;
+  border-radius: 2px;
+}
+
+/* --- 功能卡片图标美化 --- */
+.feature-icon {
+  background: linear-gradient(135deg, #4f827a, #6ba39a) !important;
+  box-shadow: 0 4px 16px rgba(79,130,122,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* 不同功能卡片不同颜色 */
+.feature-card:nth-child(2) .feature-icon {
+  background: linear-gradient(135deg, #ab845b, #c9a87c) !important;
+  box-shadow: 0 4px 16px rgba(171,132,91,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.feature-card:nth-child(3) .feature-icon {
+  background: linear-gradient(135deg, #a84e43, #c76b5f) !important;
+  box-shadow: 0 4px 16px rgba(168,78,67,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.feature-card:nth-child(4) .feature-icon {
+  background: linear-gradient(135deg, #789c8f, #98bcaf) !important;
+  box-shadow: 0 4px 16px rgba(120,156,143,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* --- 滚动显示动画 --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 交错动画延迟 */
+.reveal:nth-child(2) { transition-delay: 0.1s; }
+.reveal:nth-child(3) { transition-delay: 0.2s; }
+.reveal:nth-child(4) { transition-delay: 0.3s; }
+
+/* --- 浮动动画 --- */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.hero-visual {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* --- 输入框美化 --- */
+.field, .select {
+  background: linear-gradient(145deg, #ffffff, #faf8f3) !important;
+  border: 1px solid rgba(171,132,91,0.2) !important;
+  box-shadow: inset 0 1px 3px rgba(36,72,83,0.04);
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.field:focus, .select:focus {
+  border-color: rgba(79,130,122,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(79,130,122,0.1), inset 0 1px 3px rgba(36,72,83,0.04) !important;
+  outline: none;
+}
+
+/* --- 品相选择美化 --- */
+.condition-option {
+  background: linear-gradient(145deg, #ffffff, #faf8f3) !important;
+  border: 1px solid rgba(171,132,91,0.2) !important;
+  transition: all 0.25s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.condition-option:hover {
+  border-color: rgba(79,130,122,0.4) !important;
+  transform: translateY(-1px);
+}
+
+.condition-option.selected {
+  background: linear-gradient(135deg, rgba(79,130,122,0.1), rgba(171,132,91,0.08)) !important;
+  border-color: #4f827a !important;
+  color: #4f827a !important;
+  box-shadow: 0 2px 8px rgba(79,130,122,0.15);
+}
+
+/* --- 价格结果美化 --- */
+.price-result {
+  background: linear-gradient(135deg, #4f827a, #6ba39a) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  text-shadow: none !important;
+}
+
+/* --- 估值项美化 --- */
+.valuation-item {
+  background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(250,247,240,0.8)) !important;
+  border: 1px solid rgba(171,132,91,0.12) !important;
+  border-radius: 12px !important;
+}
+
+/* --- 天气卡片美化 --- */
+.weather-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(240,248,255,0.9)) !important;
+  border: 1px solid rgba(91,138,184,0.15) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(91,138,184,0.08);
+}
+
+/* --- 商品卡片价格美化 --- */
+.product-card .product-price {
+  background: linear-gradient(135deg, #4f827a, #6ba39a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- 发布按钮美化 --- */
+.publish-entry {
+  background: linear-gradient(135deg, #ab845b, #c9a87c) !important;
+  box-shadow: 0 4px 16px rgba(171,132,91,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: none !important;
+}
+
+.publish-entry:hover {
+  background: linear-gradient(135deg, #96734d, #b8976b) !important;
+  box-shadow: 0 8px 24px rgba(171,132,91,0.4);
+}
+
+/* --- 分段控件美化 --- */
+.segment {
+  background: linear-gradient(145deg, rgba(36,72,83,0.06), rgba(171,132,91,0.04)) !important;
+  border: 1px solid rgba(171,132,91,0.12);
+}
+
+/* --- AI助手悬浮按钮美化 --- */
+.ai-assistant-fab {
+  background: linear-gradient(135deg, #4f827a, #6ba39a) !important;
+  box-shadow: 0 6px 20px rgba(79,130,122,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.ai-assistant-fab:hover {
+  box-shadow: 0 10px 28px rgba(79,130,122,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* --- 回到顶部按钮美化 --- */
+.back-to-top {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(250,247,240,0.95)) !important;
+  border: 1px solid rgba(171,132,91,0.25) !important;
+  box-shadow: 0 4px 16px rgba(36,72,83,0.12);
+  color: #4f827a !important;
+}
+
+.back-to-top:hover {
+  border-color: rgba(171,132,91,0.5) !important;
+  box-shadow: 0 8px 24px rgba(36,72,83,0.18);
+}
+
+/* --- 页脚美化 --- */
+.site-footer {
+  background: linear-gradient(180deg, transparent, rgba(171,132,91,0.05)) !important;
+  border-top: 1px solid rgba(171,132,91,0.12);
+}
+
+/* --- 滚动条美化 --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(171,132,91,0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ab845b, #d5bd92);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #96734d, #c4a87c);
+}
+
+/* --- 选中文本美化 --- */
+::selection {
+  background: rgba(79,130,122,0.2);
+  color: #162127;
+}
+
+/* --- 移动端适配（确保美化在手机端也正常） --- */
+@media (max-width: 720px) {
+  body::before {
+    background-size: 30px 30px;
+  }
+
+  .hero::before,
+  .hero::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  .glass-card::before {
+    left: 12px;
+    right: 12px;
+  }
+
+  /* 手机端减少动画，提升性能 */
+  .hero-visual {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* --- 减少动画偏好 --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
