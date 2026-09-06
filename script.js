@@ -678,6 +678,7 @@ function initDashboardCounters() {
 const AI_ANALYSIS_STEPS = [
   { key: "image", label: "图像识别", desc: "识别文创品类、材质与视觉特征" },
   { key: "feature", label: "特征提取", desc: "提取景区来源、品相等级、限定属性" },
+  { key: "weather", label: "天气采集", desc: "获取景区实时天气与温度，修正供需指数" },
   { key: "match", label: "样本匹配", desc: "匹配全网同类成交样本与历史价格" },
   { key: "predict", label: "价格预测", desc: "多维度加权计算建议成交价区间" },
   { key: "confidence", label: "置信度评估", desc: "评估数据充分度与价格可信度" }
@@ -713,10 +714,12 @@ function getSeasonFactor() {
 }
 
 /* 多维度AI估价核心算法 */
-function aiValuationEngine(original, conditionValue, scenic, productNote = "") {
+function aiValuationEngine(original, conditionValue, scenic, productNote = "", weatherData = null) {
   const condition = CONDITION_FACTOR_MAP[conditionValue] || CONDITION_FACTOR_MAP["95"];
   const scenicData = SCENIC_HEAT_MAP[scenic] || { heat: 70, bonus: 1.0, retention: 0.65 };
   const seasonFactor = getSeasonFactor();
+  /* 天气因子（来自 Open-Meteo 实时天气，默认1.0不影响原算法） */
+  const weatherFactor = weatherData?.weatherFactor ?? 1.0;
 
   /* 关键词热度加成 */
   let keywordBonus = 1.0;
@@ -725,10 +728,10 @@ function aiValuationEngine(original, conditionValue, scenic, productNote = "") {
   if (/全新|未拆|包装完整/.test(note)) keywordBonus += 0.03;
   if (/瑕疵|磨损|使用痕迹/.test(note)) keywordBonus -= 0.05;
 
-  /* 供需指数（模拟，基于景区热度） */
-  const supplyDemand = 0.85 + (scenicData.heat / 100) * 0.3;
+  /* 供需指数（模拟，基于景区热度 + 实时天气修正） */
+  const supplyDemand = (0.85 + (scenicData.heat / 100) * 0.3) * weatherFactor;
 
-  /* 核心估价公式：原价 × 品相系数 × 景区系数 × 季节系数 × 关键词加成 × 供需指数 */
+  /* 核心估价公式：原价 × 品相系数 × 景区系数 × 季节系数 × 关键词加成 × 供需指数(含天气因子) */
   const basePrice = original * condition.factor * scenicData.bonus * seasonFactor * keywordBonus * supplyDemand;
   const result = Math.max(18, Math.round(basePrice));
 
@@ -764,7 +767,13 @@ function aiValuationEngine(original, conditionValue, scenic, productNote = "") {
     confidence,
     trend,
     listingPrice: result + 8,
-    rushPrice: Math.max(10, result - 12)
+    rushPrice: Math.max(10, result - 12),
+    weatherFactor,
+    weatherLabel: weatherData?.weatherLabel ?? '未获取',
+    weatherIcon: weatherData?.weatherIcon ?? '🌤️',
+    temperature: weatherData?.temperature ?? null,
+    humidity: weatherData?.humidity ?? null,
+    isWeatherDegraded: weatherData?.isDegraded ?? false
   };
 }
 
@@ -778,6 +787,50 @@ function initEstimator() {
   const modal = $("#resultModal");
   const close = $("#closeResult");
   const progressText = progress?.querySelector("p");
+
+  /* 天气数据缓存：选择景区时预加载，估价时直接使用 */
+  let cachedWeather = null;
+  let weatherLoading = false;
+
+  /* 景区选择时自动预加载天气 */
+  const scenicSelect = $("#scenicSelect");
+  const weatherTip = $("#scenicWeatherTip");
+  function preloadWeather(scenic) {
+    const weatherAPI = window.ZhijiabaoAPI?.WeatherService;
+    if (!weatherAPI) return;
+    weatherLoading = true;
+    cachedWeather = null;
+    if (weatherTip) {
+      weatherTip.innerHTML = `🔄 正在获取${scenic}实时天气...`;
+      weatherTip.style.opacity = "1";
+    }
+    weatherAPI.getCurrent(scenic).then(w => {
+      weatherLoading = false;
+      if (w && !w.isDegraded) {
+        cachedWeather = w;
+        if (weatherTip) {
+          weatherTip.innerHTML = `${w.weatherIcon} ${w.city} 当前 ${w.temperature}°C ${w.weatherLabel}，湿度${w.humidity}% | 天气因子 ${w.weatherFactor.toFixed(3)}`;
+          weatherTip.style.opacity = "1";
+        }
+        console.log("[预加载] 天气已就绪:", scenic, w.weatherLabel, w.temperature + "°C");
+      } else {
+        cachedWeather = null;
+        if (weatherTip) {
+          weatherTip.innerHTML = `⚠️ 天气数据获取失败，估价将按中性天气因子计算`;
+          weatherTip.style.opacity = "0.7";
+        }
+      }
+    }).catch(e => {
+      weatherLoading = false;
+      cachedWeather = null;
+      console.warn("[预加载] 天气获取失败:", e);
+    });
+  }
+  scenicSelect?.addEventListener("change", () => {
+    preloadWeather(scenicSelect.value || "故宫博物院");
+  });
+  /* 页面加载时预加载默认景区天气 */
+  window.setTimeout(() => preloadWeather(scenicSelect?.value || "故宫博物院"), 800);
 
   /* 拖拽上传支持 */
   upload?.addEventListener("dragover", (event) => {
@@ -836,8 +889,25 @@ function initEstimator() {
     const scenic = $("#scenicSelect")?.value || "故宫博物院";
     const productNote = $("#productNote")?.value || "";
 
-    /* 执行AI估价 */
-    const valuation = aiValuationEngine(original, condition, scenic, productNote);
+    /* 先获取景区实时天气（异步，不阻塞UI） */
+    let weatherData = null;
+    const weatherAPI = window.ZhijiabaoAPI?.WeatherService;
+    if (weatherAPI) {
+      weatherAPI.getCurrent(scenic).then(w => {
+        if (w && !w.isDegraded) {
+          /* 天气获取成功后，在进度条上显示天气信息 */
+          const weatherBadge = document.getElementById("weatherBadge");
+          if (weatherBadge) {
+            weatherBadge.innerHTML = `${w.weatherIcon} ${w.city} ${w.temperature}°C ${w.weatherLabel} | 天气因子 ${w.weatherFactor.toFixed(3)}`;
+            weatherBadge.style.opacity = "1";
+          }
+        }
+      }).catch(e => console.warn("[估价] 天气获取失败:", e));
+    }
+
+    /* 执行AI估价（使用预加载的天气数据） */
+    const weatherToUse = cachedWeather || weatherData;
+    const valuation = aiValuationEngine(original, condition, scenic, productNote, weatherToUse);
 
     /* 显示AI分析过程 */
     progress?.classList.add("is-active");
@@ -851,7 +921,7 @@ function initEstimator() {
     const updateProgressText = () => {
       if (stepIndex < AI_ANALYSIS_STEPS.length && progressText) {
         const step = AI_ANALYSIS_STEPS[stepIndex];
-        progressText.innerHTML = `<strong>步骤 ${stepIndex + 1}/5：${step.label}</strong><br><span style="opacity:0.7;font-size:12px;">${step.desc}</span>`;
+        progressText.innerHTML = `<strong>步骤 ${stepIndex + 1}/6：${step.label}</strong><br><span style="opacity:0.7;font-size:12px;">${step.desc}</span>`;
       }
     };
     updateProgressText();
@@ -921,20 +991,31 @@ function openEstimateModal(valuation) {
   number.textContent = "0";
 
   if (grid) {
+    const weatherText = valuation.temperature != null
+      ? `${valuation.weatherIcon} ${valuation.temperature}°C ${valuation.weatherLabel}`
+      : `${valuation.weatherIcon} ${valuation.weatherLabel}`;
+    const weatherFactorText = valuation.weatherFactor !== 1.0
+      ? `天气系数 ${valuation.weatherFactor.toFixed(3)}`
+      : "天气系数 1.000";
     grid.innerHTML = `
       <div class="valuation-item"><span>原价折损</span><strong>${Math.round((valuation.result / valuation.original) * 100)}%</strong></div>
       <div class="valuation-item"><span>品相系数</span><strong>${valuation.conditionLabel}</strong></div>
       <div class="valuation-item"><span>景区热度</span><strong>${valuation.scenicHeat > 80 ? "高热" : valuation.scenicHeat > 65 ? "稳中上升" : "平稳"}</strong></div>
+      <div class="valuation-item"><span>实时天气</span><strong>${weatherText}</strong></div>
       <div class="valuation-item"><span>成交区间</span><strong>¥${valuation.minPrice}-¥${valuation.maxPrice}</strong></div>
       <div class="valuation-item"><span>AI置信度</span><strong>${valuation.confidence}%</strong></div>
       <div class="valuation-item"><span>市场趋势</span><strong>${valuation.trend}</strong></div>
       <div class="valuation-item"><span>一年保值率</span><strong>${valuation.retentionRate}%</strong></div>
       <div class="valuation-item"><span>季节系数</span><strong>${valuation.seasonFactor.toFixed(2)}</strong></div>
+      <div class="valuation-item"><span>${weatherFactorText}</span><strong>${valuation.weatherFactor > 1.0 ? "利好↑" : valuation.weatherFactor < 1.0 ? "承压↓" : "中性→"}</strong></div>
     `;
   }
 
+  const weatherDesc = valuation.temperature != null
+    ? `、实时天气（${valuation.weatherIcon}${valuation.temperature}°C ${valuation.weatherLabel}，系数${valuation.weatherFactor.toFixed(3)}）`
+    : "、天气因子（数据获取中，暂按中性计算）";
   lines.innerHTML = `
-    <p style="animation-delay: 120ms">官方原价 ¥${valuation.original}，AI综合品相折旧（系数${valuation.conditionFactor}）、景区热度（${valuation.scenicHeat}）、季节系数（${valuation.seasonFactor.toFixed(2)}）与供需指数生成建议价。</p>
+    <p style="animation-delay: 120ms">官方原价 ¥${valuation.original}，AI综合品相折旧（系数${valuation.conditionFactor}）、景区热度（${valuation.scenicHeat}）、季节系数（${valuation.seasonFactor.toFixed(2)}）${weatherDesc}与供需指数生成建议价。</p>
     <p style="animation-delay: 240ms">同景区相似文创近 7 日成交区间集中在 ¥${valuation.minPrice} - ¥${valuation.maxPrice}，AI置信度 ${valuation.confidence}%。</p>
     <p style="animation-delay: 360ms">建议上架价 ¥${valuation.listingPrice}（预留议价空间）；急售可降至 ¥${valuation.rushPrice}；预计一年后保值约 ¥${valuation.futureValue}（保值率${valuation.retentionRate}%）。</p>
   `;

@@ -76,7 +76,7 @@
       <section class="wide-content page-hero reveal">
         <p class="section-kicker">AI Valuation</p>
         <h1 class="shine-text">景区文创智能估价</h1>
-        <p class="muted">结合景区来源、产品品相、原价、热度与历史成交区间，生成适合二手流转的建议成交价。</p>
+        <p class="muted">结合景区来源、产品品相、原价、热度、实时天气与历史成交区间，生成适合二手流转的建议成交价。</p>
       </section>
 
       <section class="wide-content estimator-layout">
@@ -101,6 +101,7 @@
                 <option>黄山风景区</option>
                 <option>平遥古城</option>
               </select>
+              <div id="scenicWeatherTip" style="font-size:12px;color:#4f827a;margin-top:4px;opacity:0.7;">🌤️ 选择景区后自动获取实时天气，融入估价模型</div>
             </div>
             <div class="form-row">
               <label for="originalPrice">购买原价</label>
@@ -126,6 +127,7 @@
           <div class="progress-panel" id="progressPanel">
             <div class="loader-ring"></div>
             <p class="muted" style="text-align:center;">正在识别图像、匹配价格样本并计算品相折旧...</p>
+            <div id="weatherBadge" style="text-align:center;font-size:13px;color:#4f827a;margin:6px 0;opacity:0;transition:opacity .3s;">🌤️ 天气采集中...</div>
             <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
           </div>
         </form>
@@ -147,6 +149,7 @@
       <div class="result-lines" id="resultLines"></div>
     </section>
   </div>
-  <script src="script.js?v=20260904b"></script>
+  <script src="api-services.js?v=20260906a"></script>
+  <script src="script.js?v=20260906a"></script>
 </body>
 </html
