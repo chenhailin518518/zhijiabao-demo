@@ -1,39 +1,125 @@
 # 智价宝
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+景区文创闲置流转平台的前端原型。覆盖 8 个景区、8 类文创商品，提供 AI 智能估价、全网比价、二手交易集市、个人中心四个功能页面。
 
-#### 软件架构
-软件架构说明
+本站为竞赛演示原型，页面中的商品信息、价格区间与估价结果均为模拟数据，不连接后端服务或数据库。
 
+- Gitee：<https://gitee.com/loopes_yxqz/zhijiabao>
+- GitHub：<https://github.com/chenhailin518518/zhijiabao-demo>
 
-#### 安装教程
+## 本地运行
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+纯静态站点，无构建步骤、无第三方依赖、无需安装。在项目根目录起一个静态服务即可：
 
-#### 使用说明
+```bash
+python -m http.server 8080
+```
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+然后浏览器访问 <http://localhost:8080/>。Node 环境也可以用 `npx serve .`。
 
-#### 参与贡献
+直接双击 `index.html` 用 `file://` 协议打开也能看到首页，但子目录页面（`estimate/` 等）在部分浏览器下会出现样式或脚本加载异常，建议走本地服务。
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+## 页面结构
 
+| 页面 | 文件 | 内容 |
+| --- | --- | --- |
+| 首页 | `index.html` | 平台介绍、四个功能入口、核心能力矩阵、热门文创推荐、保障机制 |
+| AI 智能估价 | `estimate.html` | 上传图片、选择景区与品相、填写补充说明，生成估价结果 |
+| 全网比价 | `compare.html` | 官方价 / 商户清仓价 / 二手成交价对照，支持关键词搜索与排序 |
+| 二手交易集市 | `market.html` | 个人闲置与商户尾货分区展示、商品详情、收藏、发布闲置、景区实时天气 |
+| 个人中心 | `profile.html` | 估价记录、我的发布、收藏、登录状态 |
 
-#### 特技
+每个页面同时在同名子目录下提供 `index.html`（如 `estimate/index.html`），用于支持不带 `.html` 后缀的地址。修改页面时需要同时改两份。
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## 目录结构
+
+```
+.
+├── index.html              首页
+├── estimate.html           估价页（外层）
+├── estimate/index.html     估价页（子目录入口）
+├── compare.html            比价页
+├── compare/index.html
+├── market.html             集市页
+├── market/index.html
+├── profile.html            个人中心
+├── profile/index.html
+├── styles.css              全站样式，5943 行
+├── script.js               页面交互与估价算法，2526 行
+├── api-services.js         外部接口封装，302 行
+├── assets/img/             favicon、首页背景图、8 张商品图
+├── tests/smoke.mjs         冒烟测试
+└── .nojekyll               禁用 GitHub Pages 的 Jekyll 处理
+```
+
+## AI 估价算法
+
+核心实现为 `script.js` 中的 `aiValuationEngine()`。
+
+建议成交价 = 原价 × 品相系数 × 景区系数 × 季节系数 × 关键词加成 × 供需指数
+
+| 维度 | 取值 | 说明 |
+| --- | --- | --- |
+| 品相系数 | 全新 0.82 / 95 新 0.72 / 9 成新 0.62 / 8 成新 0.48 | 用户在下拉框选择 |
+| 景区系数 | 1.12 ~ 0.92 | 8 个景区各自的保值与热度权重 |
+| 季节系数 | 4–6 月 1.08、7–8 月 1.12、9–11 月 1.05、其余 0.92 | 按当前月份自动取值 |
+| 关键词加成 | 限定/限量/联名/绝版 +0.08；全新/未拆/包装完整 +0.03；瑕疵/磨损/使用痕迹 −0.05 | 对用户填写的补充说明做正则匹配 |
+| 供需指数 | (0.85 + 景区热度 ÷ 100 × 0.3) × 天气因子 | 景区热度为内置常量 |
+| 天气因子 | 0.84 ~ 1.03 | 天气代码因子 × 温度区间因子，取景区实时天气 |
+
+除成交价外还输出价格区间（−12% ~ +15%）、挂牌价、急单价、保值率、一年后预估价值、置信度、市场趋势。成交价下限为 18 元。
+
+估价过程在页面上以六步动画展示：图像识别、特征提取、天气采集、样本匹配、价格预测、置信度评估。
+
+## 外部接口
+
+`api-services.js` 封装了三个接口，全部免费、无需申请 API Key。
+
+| 接口 | 用途 | 缓存 |
+| --- | --- | --- |
+| Open-Meteo Forecast API | 8 个景区的实时温度、体感温度、湿度、风速、天气代码、降水概率 | 15 分钟 |
+| Open-Meteo Geocoding API | 地名转经纬度 | 24 小时 |
+| api.qrserver.com | 生成估价结果的分享二维码 | 无 |
+
+接口请求统一走 `safeFetch()`，带 8 秒超时与 `AbortController`。天气接口失败时返回降级数据（因子记 1.0），不阻塞估价流程。缓存写入 `localStorage`，键名前缀 `zhijiabao-api-cache-`，每条记录自带过期时间。
+
+8 个景区的坐标内置在 `SCENIC_COORDINATES` 中：故宫博物院、杭州西湖、敦煌莫高窟、黄山风景区、平遥古城、武夷山、大雁塔、丽江古城。
+
+## 本地数据存储
+
+所有用户数据存在浏览器 `localStorage`，不落服务端。
+
+| 键名 | 内容 | 条数上限 |
+| --- | --- | --- |
+| `zhijiabao-estimate-records` | 估价历史 | 50 |
+| `zhijiabao-search-history` | 比价搜索历史 | 10 |
+| `zhijiabao-user-products` | 用户发布的闲置 | 30 |
+| `zhijiabao-favorites` | 收藏列表 | — |
+| `zhijiabao-logged-in` | 登录状态 | — |
+
+读写统一经过 `safeStorage`，在隐私模式等 `localStorage` 不可用的环境下会静默降级，不报错、不白屏。
+
+## 运行环境与适配
+
+| 项 | 说明 |
+| --- | --- |
+| 语言 | 原生 JavaScript（ES2018+），无框架、无打包工具 |
+| 浏览器 | 支持 `fetch`、`AbortController`、CSS 自定义属性、`IntersectionObserver` 的现代浏览器 |
+| 响应式断点 | 720px / 480px / 360px |
+| 移动端处理 | ≤720px 时关闭首页标题逐字动画与流光层，避免横向溢出；触控区域放大 |
+| 主题 | 支持深色国风主题切换，状态存在 `localStorage` |
+| 无障碍 | 弹窗支持 ESC 关闭与焦点管理，装饰性元素标 `aria-hidden` |
+
+## 测试
+
+```bash
+node tests/smoke.mjs
+```
+
+`tests/smoke.mjs` 检查 favicon 引用、页面资源版本号、`assetPath()` 辅助函数的使用，以及移动端样式的几条关键规则。
+
+当前这个测试跑不过：断言里写的是旧的资源版本号 `v=20260703a`，页面已经升到 `v=20260906g`，测试没有跟着更新。
+
+## 说明
+
+页面底部标注了本站为竞赛演示原型，平台数据、商品信息及估价结果均为模拟演示数据，不构成真实交易依据。
