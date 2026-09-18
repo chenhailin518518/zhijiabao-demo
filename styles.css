@@ -1383,22 +1383,6 @@ body.theme-dark .product-card {
   background: rgba(12, 27, 32, 0.72);
 }
 
-.product-image {
-  height: 190px;
-  overflow: hidden;
-}
-
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 600ms var(--ease);
-}
-
-.product-card:hover .product-image img {
-  transform: scale(1.08);
-}
-
 .product-body {
   padding: 17px;
 }
@@ -3642,6 +3626,8 @@ body.theme-dark .publish-preview {
   position: relative;
   width: 100%;
   aspect-ratio: 4/3;
+  /* 高度上限：集市 3 列 / 平板单列时卡片较宽，4:3 会把图片区撑得过高 */
+  max-height: 260px;
   background: linear-gradient(135deg, #f5f0e6 0%, #ebe4d4 100%);
   overflow: hidden;
   display: flex;

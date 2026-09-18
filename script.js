@@ -2031,20 +2031,23 @@ function initSmartRecommend() {
   if (document.body.dataset.page === "home" && browseHistory.length > 0) {
     const hotSection = $("#hotProducts")?.closest(".section");
     if (hotSection) {
-      /* 根据浏览历史推荐相似商品 */
-      const browsedIds = browseHistory.slice(0, 5).map(item => item.id);
+      /* 推荐区网格是 4 列，推荐数量对齐列数，保证整行铺满、末列不留空。
+         排除的浏览记录数按商品总数反推，确保推荐池始终够数 */
+      const RECOMMEND_COUNT = 4;
+      const excludeCount = Math.max(0, DATA.products.length - RECOMMEND_COUNT);
+      const browsedIds = browseHistory.slice(0, excludeCount).map(item => item.id);
       const recommended = DATA.products.filter(p => !browsedIds.includes(p.id))
         .sort((a, b) => (b.heat + b.retention * 100) - (a.heat + a.retention * 100))
-        .slice(0, 3);
+        .slice(0, RECOMMEND_COUNT);
 
       if (recommended.length > 0) {
         const recommendSection = document.createElement("section");
-        recommendSection.className = "section reveal";
+        recommendSection.className = "section content reveal";
         recommendSection.style.paddingTop = "20px";
         recommendSection.innerHTML = `
-          <div class="section-header">
+          <div class="section-title stack-title">
             <div>
-              <div class="section-tag">智能推荐</div>
+              <p class="section-kicker">Smart Picks</p>
               <h2>猜你喜欢</h2>
             </div>
             <p class="muted">基于你的浏览历史，AI为你精选以下商品</p>
