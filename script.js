@@ -12,7 +12,7 @@
    ========================= */
 const DATA = {
   products: [
-    { id: "fan", name: "故宫云纹折扇", scenic: "故宫博物院", category: "北京", image: "assets/img/product-fan.png", condition: "95新", official: 168, low: 92, market: 118, seller: "澄禾", tag: "限定联名", desc: "宫廷云纹扇面，适合收藏和夏季旅拍，近三日热度上升 18%。", heat: 92, retention: 0.72 },
+    { id: "fan", name: "故宫云纹折扇", scenic: "故宫博物院", category: "北京", image: "assets/img/product-fan.png", condition: "95新", official: 168, low: 132, market: 135, seller: "澄禾", tag: "限定联名", desc: "宫廷云纹扇面，适合收藏和夏季旅拍，近三日热度上升 18%。", heat: 92, retention: 0.72 },
     { id: "cup", name: "西湖荷影陶瓷杯", scenic: "杭州西湖", category: "杭州", image: "assets/img/product-cup.png", condition: "9成新", official: 128, low: 58, market: 76, seller: "湖畔旧物", tag: "实用文创", desc: "青釉杯身与荷影纹样，适合作为伴手礼，二手成交速度较快。", heat: 78, retention: 0.58 },
     { id: "bookmark", name: "敦煌飞天金属书签", scenic: "莫高窟", category: "敦煌", image: "assets/img/product-bookmark.png", condition: "全新尾货", official: 69, low: 36, market: 44, seller: "鸣沙商铺", tag: "商户尾货", desc: "轻薄金属材质，适合批量清仓，平台建议活动价 39-45 元。", heat: 65, retention: 0.62 },
     { id: "pin", name: "黄山迎客松徽章", scenic: "黄山风景区", category: "黄山", image: "assets/img/product-pin.png", condition: "95新", official: 45, low: 22, market: 29, seller: "山行者", tag: "轻收藏", desc: "小件高频交易商品，适合作为游客离园后的二次流转入口。", heat: 71, retention: 0.64 },
@@ -22,7 +22,7 @@ const DATA = {
     { id: "postcard", name: "丽江古城手绘明信片", scenic: "丽江古城", category: "云南", image: "assets/img/product-postcard.png", condition: "全新尾货", official: 35, low: 18, market: 24, seller: "木府文创", tag: "清仓组合", desc: "套装余量较多，适合商户清仓和游客拼单购买。", heat: 62, retention: 0.55 }
   ],
   records: [
-    ["故宫云纹折扇", "AI估价 ¥118", "2026-06-15"],
+    ["故宫云纹折扇", "AI估价 ¥135", "2026-06-15"],
     ["西湖荷影陶瓷杯", "AI估价 ¥76", "2026-06-14"],
     ["大雁塔祈福铜铃", "AI估价 ¥72", "2026-06-12"]
   ],
